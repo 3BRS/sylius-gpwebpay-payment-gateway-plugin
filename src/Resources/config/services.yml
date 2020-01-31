@@ -1,0 +1,39 @@
+services:
+    _defaults:
+        autowire: false
+        autoconfigure: false
+        public: false
+
+    MangoSylius\SyliusGPWebpayPaymentGatewayPlugin\Api\GPWebpayApi:
+        arguments:
+            $kernel: '@kernel'
+            $translator: '@translator'
+            $shopperContext: '@sylius.context.shopper'
+            $requestStack: '@request_stack'
+            $logger: '@sylius_fixtures.logger'
+
+    mango_sylius:gpwebpay-payment-gateway-plugin:gpwebpay_gateway_factory:
+        public: true
+        class: Payum\Core\Bridge\Symfony\Builder\GatewayFactoryBuilder
+        arguments:
+            $gatewayFactoryClass: MangoSylius\SyliusGPWebpayPaymentGatewayPlugin\GPWebpayGatewayFactory
+        tags:
+            - name: payum.gateway_factory_builder
+              factory: gpwebpay
+
+    MangoSylius\SyliusGPWebpayPaymentGatewayPlugin\Form\Type\GPWebpayGatewayConfigurationType:
+        tags:
+            - name: sylius.gateway_configuration_type
+              type: gpwebpay
+              label: mango-sylius.gpwebpay_plugin.gpwebpay
+            - name: form.type
+
+    MangoSylius\SyliusGPWebpayPaymentGatewayPlugin\Action\GPWebpayAction:
+        public: true
+        arguments:
+            $gpWebPayApi: '@MangoSylius\SyliusGPWebpayPaymentGatewayPlugin\Api\GPWebpayApi'
+        tags:
+            - name: payum.action
+              factory: gpwebpay
+              alias: payum.action.set_gpwebpay
+
