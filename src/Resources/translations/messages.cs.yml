@@ -1,12 +1,11 @@
 mango-sylius:
-
     gpwebpay_plugin:
         gpwebpay: GP webpay
         itemText: Platba za nákup
         form:
             sandbox: Testovací prostředí
             merchantNumber: Číslo obchodníka
-            keyName: Název souboru soukromého klíče
+            privateKey: Soukromý klíče
             keyPassword: Heslo pro soukromý klíč
             preferredPaymentMethod: Preferovaná platebmí metoda na bráně
             allowedPaymentMethods: Povolené platebmí metody

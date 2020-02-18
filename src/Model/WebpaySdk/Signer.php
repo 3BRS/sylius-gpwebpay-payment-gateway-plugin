@@ -23,10 +23,6 @@ class Signer
 
 	public function __construct(string $privateKey, string $privateKeyPassword, string $publicKey)
 	{
-		if (!file_exists($privateKey) || !is_readable($privateKey)) {
-			throw new SignerException("Private key ({$privateKey}) not exists or not readable!");
-		}
-
 		if (!file_exists($publicKey) || !is_readable($publicKey)) {
 			throw new SignerException("Public key ({$publicKey}) not exists or not readable!");
 		}
@@ -47,10 +43,7 @@ class Signer
 			return $this->privateKeyResource;
 		}
 
-		$key = file_get_contents($this->privateKey);
-		assert($key !== false);
-
-		$privateKeyResource = openssl_pkey_get_private($key, $this->privateKeyPassword);
+		$privateKeyResource = openssl_pkey_get_private($this->privateKey, $this->privateKeyPassword);
 		if (!$privateKeyResource) {
 			throw new SignerException("'{$this->privateKey}' is not valid PEM private key (or passphrase is incorrect).");
 		}

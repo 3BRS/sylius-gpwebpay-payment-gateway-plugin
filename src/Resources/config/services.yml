@@ -1,11 +1,11 @@
 parameters:
     mango_sylius_gpwebpay_payment_gateway_plugin_payment_methods:
-        CRD: 'Platební karta'
+        CRD: 'Card Payment'
         MCM: 'MasterCard Mobile'
         MPS: 'MasterPass'
         GPAY: 'GooglePay'
         BTNCS: 'Platba 24'
-        BTN360CS: 'Platba z účtu'
+        BTN360CS: 'Wire Transfer'
 
 services:
     _defaults:
@@ -15,7 +15,6 @@ services:
 
     MangoSylius\SyliusGPWebpayPaymentGatewayPlugin\Api\GPWebpayApi:
         arguments:
-            $kernel: '@kernel'
             $translator: '@translator'
             $shopperContext: '@sylius.context.shopper'
             $requestStack: '@request_stack'

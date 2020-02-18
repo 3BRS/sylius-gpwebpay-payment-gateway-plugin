@@ -13,7 +13,6 @@ use Payum\ISO4217\ISO4217;
 use Psr\Log\LoggerInterface;
 use Sylius\Component\Core\Context\ShopperContextInterface;
 use Symfony\Component\HttpFoundation\RequestStack;
-use Symfony\Component\HttpKernel\KernelInterface;
 use Symfony\Component\Translation\TranslatorInterface;
 
 class GPWebpayApi implements GPWebpayApiInterface
@@ -24,8 +23,6 @@ class GPWebpayApi implements GPWebpayApiInterface
 	/** @var TranslatorInterface */
 	protected $translator;
 
-	/** @var KernelInterface */
-	protected $kernel;
 	/**
 	 * @var LoggerInterface
 	 */
@@ -36,27 +33,19 @@ class GPWebpayApi implements GPWebpayApiInterface
 	protected $requestStack;
 
 	public function __construct(
-		KernelInterface $kernel,
 		TranslatorInterface $translator,
 		ShopperContextInterface $shopperContext,
 		LoggerInterface $logger,
 		RequestStack $requestStack
 	) {
-		$this->kernel = $kernel;
 		$this->translator = $translator;
 		$this->shopperContext = $shopperContext;
 		$this->logger = $logger;
 		$this->requestStack = $requestStack;
 	}
 
-	private function createApi(bool $sandbox, string $keyName, string $keyPassword, string $merchantNumber): Api
+	private function createApi(bool $sandbox, string $clientPrivateKey, string $keyPassword, string $merchantNumber): Api
 	{
-		$kernelDir = $this->kernel->getRootDir();
-
-		$clientCert = $sandbox
-			? $kernelDir . '/../config/gpWebPayKeys/clientKeys/sandbox/' . $keyName
-			: $kernelDir . '/../config/gpWebPayKeys/clientKeys/prod/' . $keyName;
-
 		$serverCert = $sandbox
 			? __DIR__ . '/../Resources/keys/serverKeys/sandbox/gpe.signing_test.pem'
 			: __DIR__ . '/../Resources/keys/serverKeys/prod/gpe.signing_prod.pem';
@@ -65,7 +54,7 @@ class GPWebpayApi implements GPWebpayApiInterface
 			? 'https://test.3dsecure.gpwebpay.com/pgw/order.do'
 			: 'https://3dsecure.gpwebpay.com/pgw/order.do';
 
-		$signer = new Signer($clientCert, $keyPassword, $serverCert);
+		$signer = new Signer($clientPrivateKey, $keyPassword, $serverCert);
 
 		return new Api($merchantNumber, $apiEndpoint, $signer);
 	}
@@ -78,9 +67,9 @@ class GPWebpayApi implements GPWebpayApiInterface
 		return (int) $currency->getNumeric();
 	}
 
-	public function create(array $order, string $merchantNumber, bool $sandbox, string $keyName, string $keyPassword, ?string $preferredPaymentMethod, ?array $allowedPaymentMethods): array
+	public function create(array $order, string $merchantNumber, bool $sandbox, string $clientPrivateKey, string $keyPassword, ?string $preferredPaymentMethod, ?array $allowedPaymentMethods): array
 	{
-		$api = $this->createAPI($sandbox, $keyName, $keyPassword, $merchantNumber);
+		$api = $this->createAPI($sandbox, $clientPrivateKey, $keyPassword, $merchantNumber);
 
 		$orderNumber = (int) $order['orderNumber'];
 		$amount = $order['amount'] / 100;
@@ -103,7 +92,7 @@ class GPWebpayApi implements GPWebpayApiInterface
 		];
 	}
 
-	public function retrieve(string $merchantNumber, bool $sandbox, string $keyName, string $keyPassword): string
+	public function retrieve(string $merchantNumber, bool $sandbox, string $clientPrivateKey, string $keyPassword): string
 	{
 		$request = $this->requestStack->getMasterRequest();
 		assert($request !== null);
@@ -120,7 +109,7 @@ class GPWebpayApi implements GPWebpayApiInterface
 		$response = new PaymentResponse($operation, $ordernumber, $merordernum, $prcode, $srcode, $resulttext, $digest, $digest1);
 
 		try {
-			$api = $this->createAPI($sandbox, $keyName, $keyPassword, $merchantNumber);
+			$api = $this->createAPI($sandbox, $clientPrivateKey, $keyPassword, $merchantNumber);
 			$api->verifyPaymentResponse($response);
 		} catch (PaymentResponseException $e) {
 			$this->logger->error($e->getMessage());

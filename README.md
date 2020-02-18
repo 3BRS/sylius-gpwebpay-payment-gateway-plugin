@@ -24,7 +24,7 @@
 * Using more different gateways at once or per channel
 
 <p align="center">
-	<img src="https://raw.githubusercontent.com/mangoweb-sylius/SyliusGPWebpayPaymentGatewayPlugin/master/doc/admin-1.png"/>
+	<img src="https://raw.githubusercontent.com/mangoweb-sylius/SyliusGPWebpayPaymentGatewayPlugin/master/doc/admin-11.png"/>
 </p>
 <p align="center">
 	<img src="https://raw.githubusercontent.com/mangoweb-sylius/SyliusGPWebpayPaymentGatewayPlugin/master/doc/admin-2.png"/>
@@ -45,10 +45,6 @@
 ## Usage
 
 * <b>Create GP webpay payment type</b><br>in Sylius admin panel<br>
-* <b>Insert client SANDBOX key</b><br>put the key into the file `/config/gpWebPayKeys/clientKeys/sandbox/{Key file name}`
-* <b>Insert client PRODUCTION key</b><br>put the key into the file `/config/gpWebPayKeys/clientKeys/prod/{Key file name}`
-
-Name of the file with the key is not important, just keep it the same for sandbox and production and remember to put the same filename (without its path) into the "Key file name" field. Recpect lowercas and uppercase characters.
 
 ## Development
 

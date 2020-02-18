@@ -31,12 +31,12 @@ class GPWebpayGatewayFactory extends GatewayFactory
 				'allowedPaymentMethods' => '',
 				'preferredPaymentMethod' => '',
 				'merchantNumber' => '',
-				'keyPrivateName' => '',
+				'keyPrivate' => '',
 				'keyPrivatePassword' => '',
 				'sandbox' => true,
 			];
 			$config->defaults($config['payum.default_options']);
-			$config['payum.required_options'] = ['merchantNumber', 'keyPrivateName', 'keyPrivatePassword'];
+			$config['payum.required_options'] = ['merchantNumber', 'keyPrivate', 'keyPrivatePassword'];
 
 			$config['payum.api'] = function (ArrayObject $config) {
 				$config->validateNotEmpty($config['payum.required_options']);
@@ -45,7 +45,7 @@ class GPWebpayGatewayFactory extends GatewayFactory
 					'allowedPaymentMethods' => $config['allowedPaymentMethods'],
 					'preferredPaymentMethod' => $config['preferredPaymentMethod'],
 					'merchantNumber' => $config['merchantNumber'],
-					'keyPrivateName' => $config['keyPrivateName'],
+					'keyPrivate' => $config['keyPrivate'],
 					'keyPrivatePassword' => $config['keyPrivatePassword'],
 					'sandbox' => $config['sandbox'],
 				];

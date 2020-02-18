@@ -49,14 +49,14 @@ class GPWebpayAction implements ApiAwareInterface, ActionInterface
 
 		$sandbox = (bool) $this->api['sandbox'];
 		$merchantNumber = (string) $this->api['merchantNumber'];
-		$keyName = (string) $this->api['keyPrivateName'];
+		$clientPrivateKey = (string) $this->api['keyPrivate'];
 		$keyPassword = (string) $this->api['keyPrivatePassword'];
 		$preferredPaymentMethod = (string) $this->api['preferredPaymentMethod'];
 		$allowedPaymentMethods = (array) $this->api['allowedPaymentMethods'];
 
 		// Not new order
 		if ($model['orderId'] !== null) {
-			$status = $this->gpWebPayApi->retrieve($merchantNumber, $sandbox, $keyName, $keyPassword);
+			$status = $this->gpWebPayApi->retrieve($merchantNumber, $sandbox, $clientPrivateKey, $keyPassword);
 			$model['gpWebPayStatus'] = $status;
 
 			return;
@@ -66,7 +66,7 @@ class GPWebpayAction implements ApiAwareInterface, ActionInterface
 		/** @var TokenInterface */
 		$token = $request->getToken();
 		$order = $this->prepareOrder($token, $model);
-		$response = $this->gpWebPayApi->create($order, $merchantNumber, $sandbox, $keyName, $keyPassword, $preferredPaymentMethod, $allowedPaymentMethods);
+		$response = $this->gpWebPayApi->create($order, $merchantNumber, $sandbox, $clientPrivateKey, $keyPassword, $preferredPaymentMethod, $allowedPaymentMethods);
 
 		if ($response) {
 			$model['orderId'] = $response['orderId'];
