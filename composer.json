@@ -6,7 +6,8 @@
 	"require": {
 		"php": "^7.1",
 		"sylius/sylius": "^1.4",
-		"adamstipak/webpay-php": "^1.1"
+		"payum/iso4217": "^1.0",
+		"ext-openssl": "*"
 	},
 	"require-dev": {
 		"behat/behat": "^3.4",

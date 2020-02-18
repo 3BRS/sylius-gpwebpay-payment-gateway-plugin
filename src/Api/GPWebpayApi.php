@@ -4,13 +4,13 @@ declare(strict_types=1);
 
 namespace MangoSylius\SyliusGPWebpayPaymentGatewayPlugin\Api;
 
-use AdamStipak\Webpay\Api;
-use AdamStipak\Webpay\PaymentRequest;
-use AdamStipak\Webpay\PaymentResponse;
-use AdamStipak\Webpay\PaymentResponseException;
-use AdamStipak\Webpay\Signer;
+use MangoSylius\SyliusGPWebpayPaymentGatewayPlugin\Model\WebpaySdk\Api;
+use MangoSylius\SyliusGPWebpayPaymentGatewayPlugin\Model\WebpaySdk\PaymentRequest;
+use MangoSylius\SyliusGPWebpayPaymentGatewayPlugin\Model\WebpaySdk\PaymentResponse;
+use MangoSylius\SyliusGPWebpayPaymentGatewayPlugin\Model\WebpaySdk\PaymentResponseException;
+use MangoSylius\SyliusGPWebpayPaymentGatewayPlugin\Model\WebpaySdk\Signer;
+use Payum\ISO4217\ISO4217;
 use Psr\Log\LoggerInterface;
-use ReflectionClass;
 use Sylius\Component\Core\Context\ShopperContextInterface;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\HttpKernel\KernelInterface;
@@ -70,18 +70,19 @@ class GPWebpayApi implements GPWebpayApiInterface
 		return new Api($merchantNumber, $apiEndpoint, $signer);
 	}
 
-	private function getCurrency(string $currency): string
+	private function getCurrency(string $currencyCode): int
 	{
-		$reflectionClass = new ReflectionClass(PaymentRequest::class);
+		$iso4217 = new ISO4217();
+		$currency = $iso4217->findByAlpha3($currencyCode);
 
-		return (string) $reflectionClass->getConstants()[$currency];
+		return (int) $currency->getNumeric();
 	}
 
-	public function create(array $order, string $merchantNumber, bool $sandbox, string $keyName, string $keyPassword): array
+	public function create(array $order, string $merchantNumber, bool $sandbox, string $keyName, string $keyPassword, ?string $preferredPaymentMethod, ?array $allowedPaymentMethods): array
 	{
 		$api = $this->createAPI($sandbox, $keyName, $keyPassword, $merchantNumber);
 
-		$orderNumber = $order['orderNumber'];
+		$orderNumber = (int) $order['orderNumber'];
 		$amount = $order['amount'] / 100;
 		$currency = $this->getCurrency($order['currency']);
 		$depositFlag = 1;
@@ -89,6 +90,12 @@ class GPWebpayApi implements GPWebpayApiInterface
 		$merOrderNumber = null;
 
 		$request = new PaymentRequest($orderNumber, $amount, $currency, $depositFlag, $url, $merOrderNumber);
+		if ($preferredPaymentMethod !== null && $preferredPaymentMethod !== '') {
+			$request->setPreferredPaymentMethod($preferredPaymentMethod);
+		}
+		if ($allowedPaymentMethods !== null && count($allowedPaymentMethods) > 0) {
+			$request->setAllowedPaymentMethods(implode(',', $allowedPaymentMethods));
+		}
 
 		return [
 			'orderId' => $order['orderNumber'],
@@ -104,8 +111,8 @@ class GPWebpayApi implements GPWebpayApiInterface
 		$operation = $request->get('OPERATION');
 		$ordernumber = $request->get('ORDERNUMBER');
 		$merordernum = $request->get('MERORDERNUM');
-		$prcode = $request->get('PRCODE');
-		$srcode = $request->get('SRCODE');
+		$prcode = (int) $request->get('PRCODE');
+		$srcode = (int) $request->get('SRCODE');
 		$resulttext = $request->get('RESULTTEXT');
 		$digest = $request->get('DIGEST');
 		$digest1 = $request->get('DIGEST1');

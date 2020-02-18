@@ -28,6 +28,8 @@ class GPWebpayGatewayFactory extends GatewayFactory
 
 		if (!$config['payum.api']) {
 			$config['payum.default_options'] = [
+				'allowedPaymentMethods' => '',
+				'preferredPaymentMethod' => '',
 				'merchantNumber' => '',
 				'keyPrivateName' => '',
 				'keyPrivatePassword' => '',
@@ -40,6 +42,8 @@ class GPWebpayGatewayFactory extends GatewayFactory
 				$config->validateNotEmpty($config['payum.required_options']);
 
 				$gpWebPayConfig = [
+					'allowedPaymentMethods' => $config['allowedPaymentMethods'],
+					'preferredPaymentMethod' => $config['preferredPaymentMethod'],
 					'merchantNumber' => $config['merchantNumber'],
 					'keyPrivateName' => $config['keyPrivateName'],
 					'keyPrivatePassword' => $config['keyPrivatePassword'],

@@ -7,6 +7,9 @@ parameters:
     symfony:
         container_xml_path: tests/Application/var/cache/test/testContainer.xml
 
+    ignoreErrors:
+        - "#Casting to int something that's already int.#"
+
     excludes_analyse:
         # Too slow
         - 'src/DependencyInjection/Configuration.php'
