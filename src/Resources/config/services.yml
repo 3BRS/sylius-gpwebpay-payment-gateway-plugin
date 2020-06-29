@@ -3,7 +3,8 @@ parameters:
         CRD: 'Card Payment'
         MCM: 'MasterCard Mobile'
         MPS: 'MasterPass'
-        GPAY: 'GooglePay'
+        GPAY: 'Google Pay'
+        APAY: 'Apple Pay'
         BTNCS: 'Platba 24'
         BTN360CS: 'Wire Transfer'
 
