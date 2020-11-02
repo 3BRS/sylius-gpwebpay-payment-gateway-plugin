@@ -10,7 +10,7 @@ namespace MangoSylius\SyliusGPWebpayPaymentGatewayPlugin\Model\WebpaySdk;
 class PaymentRequest
 {
 	/** @var array */
-	private $params = [];
+	protected $params = [];
 
 	/**
 	 * Payment Requester

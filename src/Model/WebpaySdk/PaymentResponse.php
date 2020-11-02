@@ -7,13 +7,13 @@ namespace MangoSylius\SyliusGPWebpayPaymentGatewayPlugin\Model\WebpaySdk;
 class PaymentResponse
 {
 	/** @var array */
-	private $params = [];
+	protected $params = [];
 
 	/** @var string */
-	private $digest;
+	protected $digest;
 
 	/** @var string */
-	private $digest1;
+	protected $digest1;
 
 	/**
 	 * @param string $operation
