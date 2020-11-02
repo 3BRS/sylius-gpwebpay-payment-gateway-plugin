@@ -44,7 +44,7 @@ class GPWebpayApi implements GPWebpayApiInterface
 		$this->requestStack = $requestStack;
 	}
 
-	private function createApi(bool $sandbox, string $clientPrivateKey, string $keyPassword, string $merchantNumber): Api
+	protected function createApi(bool $sandbox, string $clientPrivateKey, string $keyPassword, string $merchantNumber): Api
 	{
 		$serverCert = $sandbox
 			? __DIR__ . '/../Resources/keys/serverKeys/sandbox/gpe.signing_test.pem'
@@ -59,7 +59,7 @@ class GPWebpayApi implements GPWebpayApiInterface
 		return new Api($merchantNumber, $apiEndpoint, $signer);
 	}
 
-	private function getCurrency(string $currencyCode): int
+	protected function getCurrency(string $currencyCode): int
 	{
 		$iso4217 = new ISO4217();
 		$currency = $iso4217->findByAlpha3($currencyCode);
