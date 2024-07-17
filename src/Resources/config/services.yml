@@ -1,5 +1,5 @@
 parameters:
-    mango_sylius_gpwebpay_payment_gateway_plugin_payment_methods:
+    theebrs_sylius_gpwebpay_payment_gateway_plugin_payment_methods:
         CRD: 'Card Payment'
         MCM: 'MasterCard Mobile'
         MPS: 'MasterPass'
@@ -14,35 +14,35 @@ services:
         autoconfigure: false
         public: false
 
-    MangoSylius\SyliusGPWebpayPaymentGatewayPlugin\Api\GPWebpayApi:
+    ThreeBRS\SyliusGPWebpayPaymentGatewayPlugin\Api\GPWebpayApi:
         arguments:
             $translator: '@translator'
             $shopperContext: '@sylius.context.shopper'
             $requestStack: '@request_stack'
             $logger: '@sylius_fixtures.logger'
 
-    mango_sylius:gpwebpay-payment-gateway-plugin:gpwebpay_gateway_factory:
+    theebrs_sylius:gpwebpay-payment-gateway-plugin:gpwebpay_gateway_factory:
         public: true
         class: Payum\Core\Bridge\Symfony\Builder\GatewayFactoryBuilder
         arguments:
-            $gatewayFactoryClass: MangoSylius\SyliusGPWebpayPaymentGatewayPlugin\GPWebpayGatewayFactory
+            $gatewayFactoryClass: ThreeBRS\SyliusGPWebpayPaymentGatewayPlugin\GPWebpayGatewayFactory
         tags:
             - name: payum.gateway_factory_builder
               factory: gpwebpay
 
-    MangoSylius\SyliusGPWebpayPaymentGatewayPlugin\Form\Type\GPWebpayGatewayConfigurationType:
+    ThreeBRS\SyliusGPWebpayPaymentGatewayPlugin\Form\Type\GPWebpayGatewayConfigurationType:
         arguments:
-            $choices: '%mango_sylius_gpwebpay_payment_gateway_plugin_payment_methods%'
+            $choices: '%theebrs_sylius_gpwebpay_payment_gateway_plugin_payment_methods%'
         tags:
             - name: sylius.gateway_configuration_type
               type: gpwebpay
-              label: mango-sylius.gpwebpay_plugin.gpwebpay
+              label: theebrs-sylius.gpwebpay_plugin.gpwebpay
             - name: form.type
 
-    MangoSylius\SyliusGPWebpayPaymentGatewayPlugin\Action\GPWebpayAction:
+    ThreeBRS\SyliusGPWebpayPaymentGatewayPlugin\Action\GPWebpayAction:
         public: true
         arguments:
-            $gpWebPayApi: '@MangoSylius\SyliusGPWebpayPaymentGatewayPlugin\Api\GPWebpayApi'
+            $gpWebPayApi: '@ThreeBRS\SyliusGPWebpayPaymentGatewayPlugin\Api\GPWebpayApi'
         tags:
             - name: payum.action
               factory: gpwebpay

@@ -2,37 +2,31 @@
 
 declare(strict_types=1);
 
-namespace MangoSylius\SyliusGPWebpayPaymentGatewayPlugin\Model\WebpaySdk;
+namespace ThreeBRS\SyliusGPWebpayPaymentGatewayPlugin\Model\WebpaySdk;
 
 class PaymentResponseException extends \Exception
 {
-	/** @var int */
-	private $prCode;
+    /** @var int */
+    private $prCode;
 
-	/** @var int */
-	private $srCode;
+    /** @var int */
+    private $srCode;
 
-	public function __construct(int $prCode, int $srCode = 0, string $message = '', \Exception $previous = null)
-	{
-		$this->prCode = $prCode;
-		$this->srCode = $srCode;
+    public function __construct(int $prCode, int $srCode = 0, string $message = '', \Exception $previous = null)
+    {
+        $this->prCode = $prCode;
+        $this->srCode = $srCode;
 
-		parent::__construct($message, $prCode, $previous);
-	}
+        parent::__construct($message, $prCode, $previous);
+    }
 
-	/**
-	 * @return int
-	 */
-	public function getPrCode(): int
-	{
-		return $this->prCode;
-	}
+    public function getPrCode(): int
+    {
+        return $this->prCode;
+    }
 
-	/**
-	 * @return int
-	 */
-	public function getSrCode(): int
-	{
-		return $this->srCode;
-	}
+    public function getSrCode(): int
+    {
+        return $this->srCode;
+    }
 }

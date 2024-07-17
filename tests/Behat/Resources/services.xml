@@ -6,7 +6,7 @@
 	<services>
 		<defaults public="true"/>
 
-		<service id="mangoweb_sylius.gpwebpay.behat.context.ui.admin.managing_payment_methods" class="Sylius\Behat\Context\Ui\Admin\ManagingPaymentMethodsContext"
+		<service id="theebrs_sylius.gpwebpay.behat.context.ui.admin.managing_payment_methods" class="Sylius\Behat\Context\Ui\Admin\ManagingPaymentMethodsContext"
 			decorates="sylius.behat.context.ui.admin.managing_payment_methods">
 			<argument type="service" id="sylius.behat.page.admin.payment_method.create" />
 			<argument type="service" id="sylius.behat.page.admin.payment_method.index" />
@@ -21,19 +21,19 @@
 			</argument>
 		</service>
 
-		<service id="Tests\MangoSylius\SyliusGPWebpayPaymentGatewayPlugin\Behat\Context\Ui\Admin\ManagingPaymentMethodsContext"
-				 class="Tests\MangoSylius\SyliusGPWebpayPaymentGatewayPlugin\Behat\Context\Ui\Admin\ManagingPaymentMethodsContext">
-			<argument type="service" id="Tests\MangoSylius\SyliusGPWebpayPaymentGatewayPlugin\Behat\Pages\Admin\PaymentMethod\EditPageInterface" />
+		<service id="Tests\ThreeBRS\SyliusGPWebpayPaymentGatewayPlugin\Behat\Context\Ui\Admin\ManagingPaymentMethodsContext"
+				 class="Tests\ThreeBRS\SyliusGPWebpayPaymentGatewayPlugin\Behat\Context\Ui\Admin\ManagingPaymentMethodsContext">
+			<argument type="service" id="Tests\ThreeBRS\SyliusGPWebpayPaymentGatewayPlugin\Behat\Pages\Admin\PaymentMethod\EditPageInterface" />
 		</service>
 
-		<service id="Tests\MangoSylius\SyliusGPWebpayPaymentGatewayPlugin\Behat\Pages\Admin\PaymentMethod\EditPageInterface"
-				 class="Tests\MangoSylius\SyliusGPWebpayPaymentGatewayPlugin\Behat\Pages\Admin\PaymentMethod\EditPage"
+		<service id="Tests\ThreeBRS\SyliusGPWebpayPaymentGatewayPlugin\Behat\Pages\Admin\PaymentMethod\EditPageInterface"
+				 class="Tests\ThreeBRS\SyliusGPWebpayPaymentGatewayPlugin\Behat\Pages\Admin\PaymentMethod\EditPage"
 				 parent="sylius.behat.page.admin.crud.update" public="false">
 			<argument type="string">sylius_admin_channel_update</argument>
 		</service>
 
-		<service id="Tests\MangoSylius\SyliusGPWebpayPaymentGatewayPlugin\Behat\Context\Setup\PaymentContext"
-				 class="Tests\MangoSylius\SyliusGPWebpayPaymentGatewayPlugin\Behat\Context\Setup\PaymentContext">
+		<service id="Tests\ThreeBRS\SyliusGPWebpayPaymentGatewayPlugin\Behat\Context\Setup\PaymentContext"
+				 class="Tests\ThreeBRS\SyliusGPWebpayPaymentGatewayPlugin\Behat\Context\Setup\PaymentContext">
 			<argument type="service" id="sylius.behat.shared_storage" />
 			<argument type="service" id="sylius.repository.payment_method" />
 			<argument type="service" id="sylius.fixture.example_factory.payment_method" />

@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace MangoSylius\SyliusGPWebpayPaymentGatewayPlugin\Form\Type;
+namespace ThreeBRS\SyliusGPWebpayPaymentGatewayPlugin\Form\Type;
 
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
@@ -14,62 +14,60 @@ use Symfony\Component\Validator\Constraints\NotBlank;
 
 final class GPWebpayGatewayConfigurationType extends AbstractType
 {
-	/**
-	 * @var array
-	 */
-	private $choices;
+    /** @var array */
+    private $choices;
 
-	public function __construct(
-		array $choices
-	) {
-		$this->choices = $choices;
-	}
+    public function __construct(
+        array $choices,
+    ) {
+        $this->choices = $choices;
+    }
 
-	public function buildForm(FormBuilderInterface $builder, array $options): void
-	{
-		$builder
-			->add('sandbox', CheckboxType::class, [
-				'label' => 'mango-sylius.gpwebpay_plugin.form.sandbox',
-				'required' => false,
-			])
-			->add('merchantNumber', TextType::class, [
-				'label' => 'mango-sylius.gpwebpay_plugin.form.merchantNumber',
-				'constraints' => [
-					new NotBlank([
-						'groups' => ['sylius'],
-					]),
-				],
-			])
-			->add('keyPrivatePassword', TextType::class, [
-				'label' => 'mango-sylius.gpwebpay_plugin.form.keyPassword',
-				'constraints' => [
-					new NotBlank([
-						'groups' => ['sylius'],
-					]),
-				],
-			])
-			->add('preferredPaymentMethod', ChoiceType::class, [
-				'multiple' => false,
-				'expanded' => false,
-				'label' => 'mango-sylius.gpwebpay_plugin.form.preferredPaymentMethod',
-				'required' => false,
-				'choices' => array_flip($this->choices),
-			])
-			->add('keyPrivate', TextareaType::class, [
-				'label' => 'mango-sylius.gpwebpay_plugin.form.privateKey',
-				'constraints' => [
-					new NotBlank([
-						'groups' => ['sylius'],
-					]),
-				],
-			])
-			->add('allowedPaymentMethods', ChoiceType::class, [
-				'multiple' => true,
-				'expanded' => true,
-				'label' => 'mango-sylius.gpwebpay_plugin.form.allowedPaymentMethods',
-				'required' => false,
-				'choices' => array_flip($this->choices),
-			])
-		;
-	}
+    public function buildForm(FormBuilderInterface $builder, array $options): void
+    {
+        $builder
+            ->add('sandbox', CheckboxType::class, [
+                'label' => 'theebrs-sylius.gpwebpay_plugin.form.sandbox',
+                'required' => false,
+            ])
+            ->add('merchantNumber', TextType::class, [
+                'label' => 'theebrs-sylius.gpwebpay_plugin.form.merchantNumber',
+                'constraints' => [
+                    new NotBlank([
+                        'groups' => ['sylius'],
+                    ]),
+                ],
+            ])
+            ->add('keyPrivatePassword', TextType::class, [
+                'label' => 'theebrs-sylius.gpwebpay_plugin.form.keyPassword',
+                'constraints' => [
+                    new NotBlank([
+                        'groups' => ['sylius'],
+                    ]),
+                ],
+            ])
+            ->add('preferredPaymentMethod', ChoiceType::class, [
+                'multiple' => false,
+                'expanded' => false,
+                'label' => 'theebrs-sylius.gpwebpay_plugin.form.preferredPaymentMethod',
+                'required' => false,
+                'choices' => array_flip($this->choices),
+            ])
+            ->add('keyPrivate', TextareaType::class, [
+                'label' => 'theebrs-sylius.gpwebpay_plugin.form.privateKey',
+                'constraints' => [
+                    new NotBlank([
+                        'groups' => ['sylius'],
+                    ]),
+                ],
+            ])
+            ->add('allowedPaymentMethods', ChoiceType::class, [
+                'multiple' => true,
+                'expanded' => true,
+                'label' => 'theebrs-sylius.gpwebpay_plugin.form.allowedPaymentMethods',
+                'required' => false,
+                'choices' => array_flip($this->choices),
+            ])
+        ;
+    }
 }

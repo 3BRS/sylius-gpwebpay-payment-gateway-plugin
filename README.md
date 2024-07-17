@@ -34,17 +34,17 @@
 
 1. Run `$ composer require mangoweb-sylius/sylius-gpwebpay-payment-gateway-plugin`.
 1. Add plugin classes to your `config/bundles.php`:
- 
+
    ```php
    return [
       ...
-      MangoSylius\SyliusGPWebpayPaymentGatewayPlugin\MangoSyliusGPWebpayPaymentGatewayPlugin::class => ['all' => true],
+      ThreeBRS\SyliusGPWebpayPaymentGatewayPlugin\ThreeBRSSyliusGPWebpayPaymentGatewayPlugin::class => ['all' => true],
    ];
    ```
   
 ## Usage
 
-* <b>Create GP webpay payment type</b><br>in Sylius admin panel<br>
+* <b>Create GP webpay payment type</b><br>in Sylius admin panel, _Configuration -> Payment methods_<br>
 
 ## Development
 
@@ -55,16 +55,40 @@
 
 ### Testing
 
-
 After your changes you must ensure that the tests are still passing.
 
 ```bash
-$ composer install
-$ bin/console doctrine:schema:create -e test
-$ bin/behat
-$ bin/phpstan.sh
-$ bin/ecs.sh
+docker compose exec -u application app composer install
+docker compose exec -u application app bin/console doctrine:database:create --env=test
+docker compose exec -u application app bin/console doctrine:schema:update --complete --force --env=test
+docker compose exec -u node frontend yarn --cwd tests/Application install
+docker compose exec -u node frontend yarn --cwd tests/Application build
+
+docker compose exec -u application -e XDEBUG_MODE=off app bin/behat
+docker compose exec -u application app bin/phpstan.sh
+docker compose exec -u application app bin/ecs.sh
 ```
+
+### Opening Sylius with your plugin
+
+1. Install symfony CLI command: https://symfony.com/download
+   - hint: for Docker (with Ubuntu) use _Debian/Ubuntu — APT based
+     Linux_ installation steps as `root` user and without `sudo` command
+      - you may need to install `curl` first ```apt-get update && apt-get install curl --yes```
+2. Run app
+   sylius-g-p-webpay-payment-gateway-plugin
+```bash
+docker compose exec -u application app bash
+(cd tests/Application && APP_ENV=dev bin/console doctrine:database:create)
+(cd tests/Application && APP_ENV=dev bin/console doctrine:schema:update --complete --force)
+(cd tests/Application && APP_ENV=dev bin/console sylius:fixtures:load)
+curl -sS https://get.symfony.com/cli/installer | bash
+export PATH="$HOME/.symfony5/bin:$PATH"
+(cd tests/Application && APP_ENV=dev symfony server:start --dir=public --port=8081)
+```
+open `http://127.0.0.1:8081/admin/login`, use `sylius`, `sylius` to login
+
+- change `APP_ENV` to `test` if you need it
 
 License
 -------
@@ -72,4 +96,5 @@ This library is under the MIT license.
 
 Credits
 -------
-Developed by [manGoweb](https://www.mangoweb.eu/).
+Developed by [3BRS](https://3brs.com)<br>
+Forked from [manGoweb](https://github.com/mangoweb-sylius/SyliusPaymentRestrictionsPlugin).

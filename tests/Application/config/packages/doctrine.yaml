@@ -5,10 +5,17 @@ parameters:
     # You should not need to change this value.
     env(DATABASE_URL): ''
 
+when@test:
+    doctrine:
+        dbal:
+            driver: 'pdo_sqlite'
+            path: "%kernel.project_dir%/var/db.sql"
+            charset: UTF8
+            url: ~
+
 doctrine:
     dbal:
-        driver: 'pdo_sqlite'
-        path: "%kernel.project_dir%/var/db.sql"
+        url: '%env(resolve:DATABASE_URL)%'
         charset: UTF8
 
     orm:
@@ -20,5 +27,5 @@ doctrine:
                 is_bundle: false
                 type: annotation
                 dir: '%kernel.project_dir%/src/Entity'
-                prefix: 'Tests\MangoSylius\SyliusGPWebpayPaymentGatewayPlugin\Application\src\Entity'
+                prefix: 'Tests\ThreeBRS\SyliusGPWebpayPaymentGatewayPlugin\Application\src\Entity'
                 alias: App

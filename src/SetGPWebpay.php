@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace MangoSylius\SyliusGPWebpayPaymentGatewayPlugin;
+namespace ThreeBRS\SyliusGPWebpayPaymentGatewayPlugin;
 
 use Payum\Core\Request\Generic;
 
 class SetGPWebpay extends Generic
 {
-	// Setting SetGPWebpay into Payum
+    // Setting SetGPWebpay into Payum
 }

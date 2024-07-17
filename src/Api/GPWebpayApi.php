@@ -2,129 +2,126 @@
 
 declare(strict_types=1);
 
-namespace MangoSylius\SyliusGPWebpayPaymentGatewayPlugin\Api;
+namespace ThreeBRS\SyliusGPWebpayPaymentGatewayPlugin\Api;
 
-use MangoSylius\SyliusGPWebpayPaymentGatewayPlugin\Model\WebpaySdk\Api;
-use MangoSylius\SyliusGPWebpayPaymentGatewayPlugin\Model\WebpaySdk\PaymentRequest;
-use MangoSylius\SyliusGPWebpayPaymentGatewayPlugin\Model\WebpaySdk\PaymentResponse;
-use MangoSylius\SyliusGPWebpayPaymentGatewayPlugin\Model\WebpaySdk\PaymentResponseException;
-use MangoSylius\SyliusGPWebpayPaymentGatewayPlugin\Model\WebpaySdk\Signer;
 use Payum\ISO4217\ISO4217;
 use Psr\Log\LoggerInterface;
 use Sylius\Component\Core\Context\ShopperContextInterface;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\Translation\TranslatorInterface;
+use ThreeBRS\SyliusGPWebpayPaymentGatewayPlugin\Model\WebpaySdk\Api;
+use ThreeBRS\SyliusGPWebpayPaymentGatewayPlugin\Model\WebpaySdk\PaymentRequest;
+use ThreeBRS\SyliusGPWebpayPaymentGatewayPlugin\Model\WebpaySdk\PaymentResponse;
+use ThreeBRS\SyliusGPWebpayPaymentGatewayPlugin\Model\WebpaySdk\PaymentResponseException;
+use ThreeBRS\SyliusGPWebpayPaymentGatewayPlugin\Model\WebpaySdk\Signer;
 
 class GPWebpayApi implements GPWebpayApiInterface
 {
-	/** @var ShopperContextInterface */
-	protected $shopperContext;
+    /** @var ShopperContextInterface */
+    protected $shopperContext;
 
-	/** @var TranslatorInterface */
-	protected $translator;
+    /** @var TranslatorInterface */
+    protected $translator;
 
-	/**
-	 * @var LoggerInterface
-	 */
-	protected $logger;
-	/**
-	 * @var RequestStack
-	 */
-	protected $requestStack;
+    /** @var LoggerInterface */
+    protected $logger;
 
-	public function __construct(
-		TranslatorInterface $translator,
-		ShopperContextInterface $shopperContext,
-		LoggerInterface $logger,
-		RequestStack $requestStack
-	) {
-		$this->translator = $translator;
-		$this->shopperContext = $shopperContext;
-		$this->logger = $logger;
-		$this->requestStack = $requestStack;
-	}
+    /** @var RequestStack */
+    protected $requestStack;
 
-	protected function createApi(bool $sandbox, string $clientPrivateKey, string $keyPassword, string $merchantNumber): Api
-	{
-		$serverCert = $sandbox
-			? __DIR__ . '/../Resources/keys/serverKeys/sandbox/gpe.signing_test.pem'
-			: __DIR__ . '/../Resources/keys/serverKeys/prod/gpe.signing_prod.pem';
+    public function __construct(
+        TranslatorInterface $translator,
+        ShopperContextInterface $shopperContext,
+        LoggerInterface $logger,
+        RequestStack $requestStack,
+    ) {
+        $this->translator = $translator;
+        $this->shopperContext = $shopperContext;
+        $this->logger = $logger;
+        $this->requestStack = $requestStack;
+    }
 
-		$apiEndpoint = $sandbox
-			? 'https://test.3dsecure.gpwebpay.com/pgw/order.do'
-			: 'https://3dsecure.gpwebpay.com/pgw/order.do';
+    protected function createApi(bool $sandbox, string $clientPrivateKey, string $keyPassword, string $merchantNumber): Api
+    {
+        $serverCert = $sandbox
+            ? __DIR__ . '/../Resources/keys/serverKeys/sandbox/gpe.signing_test.pem'
+            : __DIR__ . '/../Resources/keys/serverKeys/prod/gpe.signing_prod.pem';
 
-		$signer = new Signer($clientPrivateKey, $keyPassword, $serverCert);
+        $apiEndpoint = $sandbox
+            ? 'https://test.3dsecure.gpwebpay.com/pgw/order.do'
+            : 'https://3dsecure.gpwebpay.com/pgw/order.do';
 
-		return new Api($merchantNumber, $apiEndpoint, $signer);
-	}
+        $signer = new Signer($clientPrivateKey, $keyPassword, $serverCert);
 
-	protected function getCurrency(string $currencyCode): int
-	{
-		$iso4217 = new ISO4217();
-		$currency = $iso4217->findByAlpha3($currencyCode);
+        return new Api($merchantNumber, $apiEndpoint, $signer);
+    }
 
-		return (int) $currency->getNumeric();
-	}
+    protected function getCurrency(string $currencyCode): int
+    {
+        $iso4217 = new ISO4217();
+        $currency = $iso4217->findByAlpha3($currencyCode);
 
-	public function create(array $order, string $merchantNumber, bool $sandbox, string $clientPrivateKey, string $keyPassword, ?string $preferredPaymentMethod, ?array $allowedPaymentMethods): array
-	{
-		$api = $this->createAPI($sandbox, $clientPrivateKey, $keyPassword, $merchantNumber);
+        return (int) $currency->getNumeric();
+    }
 
-		$orderNumber = (int) $order['orderNumber'];
-		$amount = $order['amount'] / 100;
-		$currency = $this->getCurrency($order['currency']);
-		$depositFlag = 1;
-		$url = $order['returnUrl'];
-		$merOrderNumber = null;
+    public function create(array $order, string $merchantNumber, bool $sandbox, string $clientPrivateKey, string $keyPassword, ?string $preferredPaymentMethod, ?array $allowedPaymentMethods): array
+    {
+        $api = $this->createAPI($sandbox, $clientPrivateKey, $keyPassword, $merchantNumber);
 
-		$request = new PaymentRequest($orderNumber, $amount, $currency, $depositFlag, $url, $merOrderNumber);
-		if ($preferredPaymentMethod !== null && $preferredPaymentMethod !== '') {
-			$request->setPreferredPaymentMethod($preferredPaymentMethod);
-		}
-		if ($allowedPaymentMethods !== null && count($allowedPaymentMethods) > 0) {
-			$request->setAllowedPaymentMethods(implode(',', $allowedPaymentMethods));
-		}
+        $orderNumber = (int) $order['orderNumber'];
+        $amount = $order['amount'] / 100;
+        $currency = $this->getCurrency($order['currency']);
+        $depositFlag = 1;
+        $url = $order['returnUrl'];
+        $merOrderNumber = null;
 
-		return [
-			'orderId' => $order['orderNumber'],
-			'gatewayLocationUrl' => $api->createPaymentRequestUrl($request),
-		];
-	}
+        $request = new PaymentRequest($orderNumber, $amount, $currency, $depositFlag, $url, $merOrderNumber);
+        if ($preferredPaymentMethod !== null && $preferredPaymentMethod !== '') {
+            $request->setPreferredPaymentMethod($preferredPaymentMethod);
+        }
+        if ($allowedPaymentMethods !== null && count($allowedPaymentMethods) > 0) {
+            $request->setAllowedPaymentMethods(implode(',', $allowedPaymentMethods));
+        }
 
-	public function retrieve(string $merchantNumber, bool $sandbox, string $clientPrivateKey, string $keyPassword): string
-	{
-		$request = $this->requestStack->getMasterRequest();
-		assert($request !== null);
+        return [
+            'orderId' => $order['orderNumber'],
+            'gatewayLocationUrl' => $api->createPaymentRequestUrl($request),
+        ];
+    }
 
-		$operation = $request->get('OPERATION');
-		$ordernumber = $request->get('ORDERNUMBER');
-		$merordernum = $request->get('MERORDERNUM');
-		$prcode = (int) $request->get('PRCODE');
-		$srcode = (int) $request->get('SRCODE');
-		$resulttext = $request->get('RESULTTEXT');
-		$digest = $request->get('DIGEST');
-		$digest1 = $request->get('DIGEST1');
+    public function retrieve(string $merchantNumber, bool $sandbox, string $clientPrivateKey, string $keyPassword): string
+    {
+        $request = $this->requestStack->getMasterRequest();
+        assert($request !== null);
 
-		$response = new PaymentResponse($operation, $ordernumber, $merordernum, $prcode, $srcode, $resulttext, $digest, $digest1);
+        $operation = $request->get('OPERATION');
+        $ordernumber = $request->get('ORDERNUMBER');
+        $merordernum = $request->get('MERORDERNUM');
+        $prcode = (int) $request->get('PRCODE');
+        $srcode = (int) $request->get('SRCODE');
+        $resulttext = $request->get('RESULTTEXT');
+        $digest = $request->get('DIGEST');
+        $digest1 = $request->get('DIGEST1');
 
-		try {
-			$api = $this->createAPI($sandbox, $clientPrivateKey, $keyPassword, $merchantNumber);
-			$api->verifyPaymentResponse($response);
-		} catch (PaymentResponseException $e) {
-			$this->logger->error($e->getMessage());
+        $response = new PaymentResponse($operation, $ordernumber, $merordernum, $prcode, $srcode, $resulttext, $digest, $digest1);
 
-			return GPWebpayApiInterface::CANCELED;
-		} catch (\Exception $e) {
-			$this->logger->error($e->getMessage());
+        try {
+            $api = $this->createAPI($sandbox, $clientPrivateKey, $keyPassword, $merchantNumber);
+            $api->verifyPaymentResponse($response);
+        } catch (PaymentResponseException $e) {
+            $this->logger->error($e->getMessage());
 
-			return GPWebpayApiInterface::CANCELED;
-		}
+            return GPWebpayApiInterface::CANCELED;
+        } catch (\Exception $e) {
+            $this->logger->error($e->getMessage());
 
-		if ($response->hasError()) {
-			return GPWebpayApiInterface::CANCELED;
-		}
+            return GPWebpayApiInterface::CANCELED;
+        }
 
-		return GPWebpayApiInterface::PAID;
-	}
+        if ($response->hasError()) {
+            return GPWebpayApiInterface::CANCELED;
+        }
+
+        return GPWebpayApiInterface::PAID;
+    }
 }
