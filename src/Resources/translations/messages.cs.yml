@@ -1,4 +1,4 @@
-mango-sylius:
+theebrs-sylius:
     gpwebpay_plugin:
         gpwebpay: GP webpay
         itemText: Platba za nákup

@@ -4,13 +4,14 @@ imports:
 
 default:
     extensions:
-        Lakion\Behat\MinkDebugExtension:
+        FriendsOfBehat\MinkDebugExtension:
             directory: etc/build
             clean_start: false
             screenshot: true
 
         Behat\MinkExtension:
-            base_url: "http://localhost:8080/"
+            files_path: "%paths.base%/vendor/sylius/sylius/src/Sylius/Behat/Resources/fixtures/"
+            base_url: "https://127.0.0.1:8080/"
             default_session: symfony
             sessions:
                 symfony:
@@ -19,7 +20,8 @@ default:
         FriendsOfBehat\SymfonyExtension:
             bootstrap: tests/Application/config/bootstrap.php
             kernel:
-                class: Tests\MangoSylius\SyliusGPWebpayPaymentGatewayPlugin\Application\Kernel
+                class: Tests\ThreeBRS\SyliusGPWebpayPaymentGatewayPlugin\Kernel
+                environment: test
 
         FriendsOfBehat\VariadicExtension: ~
 
