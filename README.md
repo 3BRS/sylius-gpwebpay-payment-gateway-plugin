@@ -58,15 +58,15 @@
 After your changes you must ensure that the tests are still passing.
 
 ```bash
-docker compose exec -u application app composer install
-docker compose exec -u application app bin/console doctrine:database:create --env=test
-docker compose exec -u application app bin/console doctrine:schema:update --complete --force --env=test
-docker compose exec -u node frontend yarn --cwd tests/Application install
-docker compose exec -u node frontend yarn --cwd tests/Application build
+docker compose run -u application app composer install
+docker compose run -u application app bin/console doctrine:database:create --env=test
+docker compose run -u application app bin/console doctrine:schema:update --complete --force --env=test
+docker compose run -u node frontend yarn --cwd tests/Application install
+docker compose run -u node frontend yarn --cwd tests/Application build
 
-docker compose exec -u application -e XDEBUG_MODE=off app bin/behat
-docker compose exec -u application app bin/phpstan.sh
-docker compose exec -u application app bin/ecs.sh
+docker compose run -u application -e XDEBUG_MODE=off app bin/behat
+docker compose run -u application app bin/phpstan.sh
+docker compose run -u application app bin/ecs.sh
 ```
 
 ### Opening Sylius with your plugin
@@ -78,7 +78,7 @@ docker compose exec -u application app bin/ecs.sh
 2. Run app
    sylius-g-p-webpay-payment-gateway-plugin
 ```bash
-docker compose exec -u application app bash
+docker compose run -u application app bash
 (cd tests/Application && APP_ENV=dev bin/console doctrine:database:create)
 (cd tests/Application && APP_ENV=dev bin/console doctrine:schema:update --complete --force)
 (cd tests/Application && APP_ENV=dev bin/console sylius:fixtures:load)

@@ -46,9 +46,9 @@ final class PaymentContext implements Context
      * @Given the store allows paying with name :paymentMethodName and code :paymentMethodCode gpwebpay gateway
      */
     public function theStoreHasPaymentMethodWithCodeAndGPWebpayCheckoutGateway(
-        $paymentMethodName,
-        $paymentMethodCode,
-    ) {
+        string $paymentMethodName,
+        string $paymentMethodCode,
+    ): void {
         $paymentMethod = $this->createPaymentMethod($paymentMethodName, $paymentMethodCode, 'GP webpay');
         $paymentMethod->getGatewayConfig()->setConfig([
             'merchantNumber' => 'TEST',
@@ -60,27 +60,16 @@ final class PaymentContext implements Context
         $this->paymentMethodManager->flush();
     }
 
-    /**
-     * @param string $name
-     * @param string $code
-     * @param string $gatewayFactory
-     * @param string $description
-     * @param bool $addForCurrentChannel
-     * @param int|null $position
-     *
-     * @return PaymentMethodInterface
-     */
     private function createPaymentMethod(
-        $name,
-        $code,
-        $gatewayFactory = 'Offline',
-        $description = '',
-        $addForCurrentChannel = true,
-        $position = null,
-    ) {
+        string $name,
+        string $code,
+        string $gatewayFactory = 'Offline',
+        string $description = '',
+        bool $addForCurrentChannel = true,
+        int $position = null,
+    ): PaymentMethodInterface {
         $gatewayFactory = array_search($gatewayFactory, $this->gatewayFactories);
 
-        /** @var PaymentMethodInterface $paymentMethod */
         $paymentMethod = $this->paymentMethodExampleFactory->create([
             'name' => ucfirst($name),
             'code' => $code,
@@ -90,6 +79,8 @@ final class PaymentContext implements Context
             'enabled' => true,
             'channels' => ($addForCurrentChannel && $this->sharedStorage->has('channel')) ? [$this->sharedStorage->get('channel')] : [],
         ]);
+
+        assert($paymentMethod instanceof PaymentMethodInterface);
 
         if (null !== $position) {
             $paymentMethod->setPosition((int) $position);
