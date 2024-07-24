@@ -9,7 +9,7 @@ class Signer
     /** @var string */
     private $privateKey;
 
-    /** @var resource|null */
+    /** @var \OpenSSLAsymmetricKey|null */
     private $privateKeyResource;
 
     /** @var string */
@@ -18,7 +18,7 @@ class Signer
     /** @var string */
     private $publicKey;
 
-    /** @var resource|null */
+    /** @var \OpenSSLAsymmetricKey|null */
     private $publicKeyResource;
 
     public function __construct(string $privateKey, string $privateKeyPassword, string $publicKey)
@@ -33,11 +33,9 @@ class Signer
     }
 
     /**
-     * @return resource
-     *
      * @throws SignerException
      */
-    private function getPrivateKeyResource()
+    private function getPrivateKeyResource(): \OpenSSLAsymmetricKey
     {
         if ($this->privateKeyResource) {
             return $this->privateKeyResource;
@@ -57,9 +55,8 @@ class Signer
     {
         $digestText = implode('|', $params);
         openssl_sign($digestText, $digest, $this->getPrivateKeyResource());
-        $digest = base64_encode($digest);
 
-        return $digest;
+        return base64_encode($digest);
     }
 
     /**
@@ -85,11 +82,9 @@ class Signer
     }
 
     /**
-     * @return resource
-     *
      * @throws SignerException
      */
-    private function getPublicKeyResource()
+    private function getPublicKeyResource(): \OpenSSLAsymmetricKey
     {
         if ($this->publicKeyResource) {
             return $this->publicKeyResource;

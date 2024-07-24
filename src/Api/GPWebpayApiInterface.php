@@ -14,5 +14,5 @@ interface GPWebpayApiInterface
 
     public function create(array $order, string $merchantNumber, bool $sandbox, string $keyName, string $keyPassword, ?string $preferredPaymentMethod, ?array $allowedPaymentMethods): array;
 
-    public function retrieve(string $merchantNumber, bool $sandbox, string $keyName, string $keyPassword): string;
+    public function retrieve(string $merchantNumber, bool $sandbox, string $clientPrivateKey, string $keyPassword): string;
 }

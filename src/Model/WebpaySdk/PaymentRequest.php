@@ -45,7 +45,7 @@ class PaymentRequest
      *
      * @internal
      */
-    public function setDigest(string $digest)
+    public function setDigest(string $digest): void
     {
         $this->params['DIGEST'] = $digest;
     }
@@ -75,7 +75,7 @@ class PaymentRequest
      *
      * @param string $value field value
      */
-    public function setDescription(string $value)
+    public function setDescription(string $value): void
     {
         $this->params['DESCRIPTION'] = $value;
     }
@@ -85,7 +85,7 @@ class PaymentRequest
      *
      * @param string $value field value
      */
-    public function setPreferredPaymentMethod(string $value)
+    public function setPreferredPaymentMethod(string $value): void
     {
         $this->params['PAYMETHOD'] = $value;
     }
@@ -95,7 +95,7 @@ class PaymentRequest
      *
      * @param string $value field value
      */
-    public function setAllowedPaymentMethods(string $value)
+    public function setAllowedPaymentMethods(string $value): void
     {
         $this->params['PAYMETHODS'] = $value;
     }

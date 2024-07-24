@@ -22,3 +22,6 @@ COPY init-working-user.sh /.docker/init-working-user.sh
 CMD bash -c 'bash /.docker/init-working-user.sh ${APPLICATION_PATH} && (cd / && supervisord)'
 
 WORKDIR /app
+
+# disable default entrypoint to allow custom user
+ENTRYPOINT []

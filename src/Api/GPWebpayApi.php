@@ -8,7 +8,7 @@ use Payum\ISO4217\ISO4217;
 use Psr\Log\LoggerInterface;
 use Sylius\Component\Core\Context\ShopperContextInterface;
 use Symfony\Component\HttpFoundation\RequestStack;
-use Symfony\Component\Translation\TranslatorInterface;
+use Symfony\Contracts\Translation\TranslatorInterface;
 use ThreeBRS\SyliusGPWebpayPaymentGatewayPlugin\Model\WebpaySdk\Api;
 use ThreeBRS\SyliusGPWebpayPaymentGatewayPlugin\Model\WebpaySdk\PaymentRequest;
 use ThreeBRS\SyliusGPWebpayPaymentGatewayPlugin\Model\WebpaySdk\PaymentResponse;
@@ -64,9 +64,9 @@ class GPWebpayApi implements GPWebpayApiInterface
         return (int) $currency->getNumeric();
     }
 
-    public function create(array $order, string $merchantNumber, bool $sandbox, string $clientPrivateKey, string $keyPassword, ?string $preferredPaymentMethod, ?array $allowedPaymentMethods): array
+    public function create(array $order, string $merchantNumber, bool $sandbox, string $keyName, string $keyPassword, ?string $preferredPaymentMethod, ?array $allowedPaymentMethods): array
     {
-        $api = $this->createAPI($sandbox, $clientPrivateKey, $keyPassword, $merchantNumber);
+        $api = $this->createAPI($sandbox, $keyName, $keyPassword, $merchantNumber);
 
         $orderNumber = (int) $order['orderNumber'];
         $amount = $order['amount'] / 100;
@@ -91,7 +91,7 @@ class GPWebpayApi implements GPWebpayApiInterface
 
     public function retrieve(string $merchantNumber, bool $sandbox, string $clientPrivateKey, string $keyPassword): string
     {
-        $request = $this->requestStack->getMasterRequest();
+        $request = $this->requestStack->getMainRequest();
         assert($request !== null);
 
         $operation = $request->get('OPERATION');

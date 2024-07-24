@@ -46,7 +46,7 @@ class Api
      * @throws RuntimeException
      * @throws PaymentResponseException
      */
-    public function verifyPaymentResponse(PaymentResponse $response)
+    public function verifyPaymentResponse(PaymentResponse $response): void
     {
         // verify digest & digest1
         try {
