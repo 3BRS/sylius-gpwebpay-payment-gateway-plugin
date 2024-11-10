@@ -14,5 +14,5 @@ groupmod -g $(stat -c "%g" $1) node
 usermod -s /bin/bash node
 
 mkdir -p /home/node/.cache/yarn
-chown --recursive node:node /home/node/.cache/yar
-chmod --recursive u+rw /home/node/.cache/yarn
+chown -R node:node /home/node/.cache/yar
+chmod -R u+rw /home/node/.cache/yarn
