@@ -14,5 +14,5 @@ groupmod -g $(stat -c "%g" $1) application
 usermod -s /bin/bash application
 
 mkdir -p /home/application/.composer
-chown --recursive application:application /home/application/.composer
-chmod --recursive u+rw /home/application/.composer
+chown -R application:application /home/application/.composer
+chmod -R u+rw /home/application/.composer
