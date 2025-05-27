@@ -13,8 +13,13 @@ use Sylius\Component\Payment\Repository\PaymentMethodRepositoryInterface;
 
 final class PaymentContext implements Context
 {
-    public function __construct(private readonly SharedStorageInterface $sharedStorage, private readonly PaymentMethodRepositoryInterface $paymentMethodRepository, private readonly ExampleFactoryInterface $paymentMethodExampleFactory, private readonly ObjectManager $paymentMethodManager, private readonly array $gatewayFactories)
-    {
+    public function __construct(
+        private readonly SharedStorageInterface $sharedStorage,
+        private readonly PaymentMethodRepositoryInterface $paymentMethodRepository,
+        private readonly ExampleFactoryInterface $paymentMethodExampleFactory,
+        private readonly ObjectManager $paymentMethodManager,
+        private readonly array $gatewayFactories,
+    ) {
     }
 
     /**
@@ -43,7 +48,7 @@ final class PaymentContext implements Context
         string $gatewayFactory = 'Offline',
         string $description = '',
         bool $addForCurrentChannel = true,
-        int $position = null,
+        ?int $position = null,
     ): PaymentMethodInterface {
         $gatewayFactory = array_search($gatewayFactory, $this->gatewayFactories);
 
@@ -54,7 +59,9 @@ final class PaymentContext implements Context
             'gatewayName' => $gatewayFactory,
             'gatewayFactory' => $gatewayFactory,
             'enabled' => true,
-            'channels' => ($addForCurrentChannel && $this->sharedStorage->has('channel')) ? [$this->sharedStorage->get('channel')] : [],
+            'channels' => ($addForCurrentChannel && $this->sharedStorage->has('channel'))
+                ? [$this->sharedStorage->get('channel')]
+                : [],
         ]);
 
         assert($paymentMethod instanceof PaymentMethodInterface);

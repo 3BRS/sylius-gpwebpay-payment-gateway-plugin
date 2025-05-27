@@ -15,6 +15,7 @@ parameters:
         - 'tests/Application/config/bootstrap.php'
         - 'tests/Application/node_modules'
         - 'tests/Application/var'
+        - 'tests/Application/config/sylius'
 
     ignoreErrors:
         - '/Parameter #1 \$configuration of method Symfony\\Component\\DependencyInjection\\Extension\\Extension::processConfiguration\(\) expects Symfony\\Component\\Config\\Definition\\ConfigurationInterface, Symfony\\Component\\Config\\Definition\\ConfigurationInterface\|null given\./'
