@@ -6,14 +6,8 @@ namespace ThreeBRS\SyliusGPWebpayPaymentGatewayPlugin\Model\WebpaySdk;
 
 class Signer
 {
-    /** @var string */
-    private $privateKey;
-
     /** @var \OpenSSLAsymmetricKey|null */
     private $privateKeyResource;
-
-    /** @var string */
-    private $privateKeyPassword;
 
     /** @var string */
     private $publicKey;
@@ -21,14 +15,11 @@ class Signer
     /** @var \OpenSSLAsymmetricKey|null */
     private $publicKeyResource;
 
-    public function __construct(string $privateKey, string $privateKeyPassword, string $publicKey)
+    public function __construct(private readonly string $privateKey, private readonly string $privateKeyPassword, string $publicKey)
     {
         if (!file_exists($publicKey) || !is_readable($publicKey)) {
             throw new SignerException("Public key ({$publicKey}) not exists or not readable!");
         }
-
-        $this->privateKey = $privateKey;
-        $this->privateKeyPassword = $privateKeyPassword;
         $this->publicKey = $publicKey;
     }
 
@@ -56,7 +47,7 @@ class Signer
         $digestText = implode('|', $params);
         openssl_sign($digestText, $digest, $this->getPrivateKeyResource());
 
-        return base64_encode($digest);
+        return base64_encode((string) $digest);
     }
 
     /**
@@ -93,7 +84,7 @@ class Signer
         $fp = fopen($this->publicKey, 'rb');
         assert($fp !== false);
         $filesize = filesize($this->publicKey);
-        assert($filesize !== false);
+        assert($filesize !== false && $filesize > 0);
         $key = fread($fp, $filesize);
         fclose($fp);
         assert($key !== false);

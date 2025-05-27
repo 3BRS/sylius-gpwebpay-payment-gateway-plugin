@@ -15,9 +15,6 @@ class PaymentResponse
     /** @var string */
     protected $digest1;
 
-    /**
-     * @param string $merordernum
-     */
     public function __construct(string $operation, string $ordernumber, ?string $merordernum, int $prcode, int $srcode, string $resulttext, string $digest, string $digest1)
     {
         $this->params['operation'] = $operation;

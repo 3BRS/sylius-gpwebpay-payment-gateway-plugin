@@ -1,6 +1,4 @@
-
-/vendor/
-/node_modules/
+/.envrc
 /composer.lock
 /symfony.lock
 /yarn.lock
@@ -10,10 +8,7 @@
 
 /tests/Application/yarn.lock
 
-docker-compose.override.yaml
-docker-compose.override.dist.yaml
-docker-compose.yaml
-/bin-docker/
+/docker.override.yaml
 /deploy/
 /docker/
 /.idea/

@@ -5,14 +5,6 @@ parameters:
     # You should not need to change this value.
     env(DATABASE_URL): ''
 
-when@test:
-    doctrine:
-        dbal:
-            driver: 'pdo_sqlite'
-            path: "%kernel.project_dir%/var/db.sql"
-            charset: UTF8
-            url: ~
-
 doctrine:
     dbal:
         url: '%env(resolve:DATABASE_URL)%'

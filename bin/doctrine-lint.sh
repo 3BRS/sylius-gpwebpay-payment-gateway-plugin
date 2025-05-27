@@ -8,4 +8,4 @@ cd "$(dirname "$DIR")"
 
 set -x
 
-vendor/bin/ecs check --config=ecs.php "$@"
+bin/console --no-interaction doctrine:schema:validate --skip-sync

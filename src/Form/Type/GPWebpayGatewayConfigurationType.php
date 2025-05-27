@@ -14,13 +14,8 @@ use Symfony\Component\Validator\Constraints\NotBlank;
 
 final class GPWebpayGatewayConfigurationType extends AbstractType
 {
-    /** @var array */
-    private $choices;
-
-    public function __construct(
-        array $choices,
-    ) {
-        $this->choices = $choices;
+    public function __construct(private readonly array $choices)
+    {
     }
 
     public function buildForm(FormBuilderInterface $builder, array $options): void

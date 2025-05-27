@@ -7,5 +7,4 @@ DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 cd "$(dirname "$DIR")"
 
 set -x
-
-vendor/bin/ecs check --config=ecs.php "$@"
+APP_ENV="test" php -d memory_limit=1G vendor/bin/behat "$@"
