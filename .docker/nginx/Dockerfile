@@ -1,8 +1,8 @@
 FROM ghcr.io/sylius/sylius-nginx:alpine
 
-RUN echo "${WORKING_DIR}"
-
 ENV WORKING_DIR=/srv/sylius/tests/Application
+
+RUN echo "${WORKING_DIR}"
 
 WORKDIR "${WORKING_DIR}"
 

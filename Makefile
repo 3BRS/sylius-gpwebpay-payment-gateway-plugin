@@ -7,7 +7,7 @@ run: init
 init:
 	which docker > /dev/null || (echo "Please install docker binary" && exit 1)
 	which direnv > /dev/null || (echo "Please install direnv binary" && exit 1)
-	if [ `command -v direnv &> /dev/null` ]; then \
+	if command -v direnv >/dev/null; then \
 		cp --update=none .envrc.dist .envrc; \
 		direnv allow; \
 	fi
@@ -18,7 +18,7 @@ init:
 	./bin-docker/php ./bin/console --env="$(APP_ENV)" doctrine:database:create --no-interaction --if-not-exists
 	./bin-docker/php ./bin/console --env="$(APP_ENV)" doctrine:migrations:migrate --no-interaction
 	./bin-docker/php ./bin/console --env="$(APP_ENV)" doctrine:schema:update --force --complete --no-interaction
-	./bin-docker/php ./bin/console --env="$(APP_ENV)"  doctrine:migration:sync-metadata-storage
+	./bin-docker/php ./bin/console --env="$(APP_ENV)" doctrine:migration:sync-metadata-storage
 	./bin-docker/php ./bin/console --env="$(APP_ENV)" assets:install
 	./bin-docker/yarn --cwd=tests/Application install --pure-lockfile
 	GULP_ENV=prod ./bin-docker/yarn --cwd=tests/Application build
@@ -27,7 +27,7 @@ init:
 init-tests:
 	which docker > /dev/null || (echo "Please install docker binary" && exit 1)
 	which direnv > /dev/null || (echo "Please install direnv binary" && exit 1)
-	if [ `command -v direnv &> /dev/null` ]; then \
+	if command -v direnv >/dev/null; then \
 		cp --update=none .envrc.dist .envrc; \
 		direnv allow; \
 	fi
@@ -46,8 +46,8 @@ init-tests:
 	chmod -R 777 tests/Application/var
 
 cache:
-	./bin-docker/php ./bin/console --env="$(APP_ENV)" cache:clear
 	@make var
+	./bin-docker/php ./bin/console --env="$(APP_ENV)" cache:clear
 
 static: fix static-only
 
@@ -83,7 +83,7 @@ yarn-build:
 	./bin-docker/yarn install
 	./bin-docker/yarn build
 
-make yarn: yarn-build
+yarn: yarn-build
 
 schema-reset:
 	./bin-docker/php ./bin/console --env="$(APP_ENV)" doctrine:database:drop --force --if-exists
