@@ -9,7 +9,9 @@ use Payum\Core\Bridge\Spl\ArrayObject;
 use Payum\Core\Exception\RequestNotSupportedException;
 use Payum\Core\GatewayAwareInterface;
 use Payum\Core\GatewayAwareTrait;
+use Payum\Core\Model\ModelAggregateInterface;
 use Payum\Core\Request\Capture;
+use Payum\Core\Security\TokenAggregateInterface;
 use Payum\Core\Security\TokenInterface;
 use ThreeBRS\SyliusGPWebpayPaymentGatewayPlugin\SetGPWebpay;
 
@@ -24,10 +26,16 @@ class CaptureAction implements ActionInterface, GatewayAwareInterface
     {
         RequestNotSupportedException::assertSupports($this, $request);
 
+        assert($request instanceof ModelAggregateInterface);
         $model = ArrayObject::ensureArrayObject($request->getModel());
         ArrayObject::ensureArrayObject($model);
 
-        $gpWebPayActionAction = $this->getGPWebpayAction($request->getToken(), $model);
+        assert($request instanceof TokenAggregateInterface);
+        $token = $request->getToken();
+        if (!$token instanceof TokenInterface) {
+            throw new \LogicException('Token must be set.');
+        }
+        $gpWebPayActionAction = $this->getGPWebpayAction($token, $model);
         $this->gateway->execute($gpWebPayActionAction);
     }
 

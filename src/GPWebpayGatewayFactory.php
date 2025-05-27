@@ -10,6 +10,7 @@ use ThreeBRS\SyliusGPWebpayPaymentGatewayPlugin\Action\CaptureAction;
 use ThreeBRS\SyliusGPWebpayPaymentGatewayPlugin\Action\ConvertPaymentAction;
 use ThreeBRS\SyliusGPWebpayPaymentGatewayPlugin\Action\StatusAction;
 
+/** @noinspection PhpUnused used in services.yml */
 class GPWebpayGatewayFactory extends GatewayFactory
 {
     /**
@@ -35,10 +36,12 @@ class GPWebpayGatewayFactory extends GatewayFactory
                 'keyPrivatePassword' => '',
                 'sandbox' => true,
             ];
+            assert(is_iterable($config['payum.default_options']));
             $config->defaults($config['payum.default_options']);
             $config['payum.required_options'] = ['merchantNumber', 'keyPrivate', 'keyPrivatePassword'];
 
             $config['payum.api'] = function (ArrayObject $config) {
+                assert(is_array($config['payum.required_options']));
                 $config->validateNotEmpty($config['payum.required_options']);
 
                 $gpWebPayConfig = [

@@ -97,6 +97,9 @@ class GPWebpayApi implements GPWebpayApiInterface
         $operation = (string) $request->get('OPERATION');
         $ordernumber = (string) $request->get('ORDERNUMBER');
         $merordernum = $request->get('MERORDERNUM');
+        $merordernum = $merordernum !== null
+            ? (string) $merordernum
+            : null;
         $prcode = (int) $request->get('PRCODE');
         $srcode = (int) $request->get('SRCODE');
         $resulttext = (string) $request->get('RESULTTEXT');
@@ -108,11 +111,7 @@ class GPWebpayApi implements GPWebpayApiInterface
         try {
             $api = $this->createAPI($sandbox, $clientPrivateKey, $keyPassword, $merchantNumber);
             $api->verifyPaymentResponse($response);
-        } catch (PaymentResponseException $e) {
-            $this->logger->error($e->getMessage());
-
-            return GPWebpayApiInterface::CANCELED;
-        } catch (\Exception $e) {
+        } catch (PaymentResponseException|\Exception $e) {
             $this->logger->error($e->getMessage());
 
             return GPWebpayApiInterface::CANCELED;

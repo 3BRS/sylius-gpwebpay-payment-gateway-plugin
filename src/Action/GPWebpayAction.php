@@ -9,7 +9,10 @@ use Payum\Core\ApiAwareInterface;
 use Payum\Core\Bridge\Spl\ArrayObject;
 use Payum\Core\Exception\RequestNotSupportedException;
 use Payum\Core\Exception\UnsupportedApiException;
+use Payum\Core\Model\ModelAggregateInterface;
+use Payum\Core\Model\ModelAwareInterface;
 use Payum\Core\Reply\HttpRedirect;
+use Payum\Core\Security\TokenAggregateInterface;
 use Payum\Core\Security\TokenInterface;
 use ThreeBRS\SyliusGPWebpayPaymentGatewayPlugin\Api\GPWebpayApiInterface;
 use ThreeBRS\SyliusGPWebpayPaymentGatewayPlugin\SetGPWebpay;
@@ -45,6 +48,7 @@ class GPWebpayAction implements ApiAwareInterface, ActionInterface
     public function execute($request): void
     {
         RequestNotSupportedException::assertSupports($this, $request);
+        assert($request instanceof ModelAggregateInterface);
         $model = ArrayObject::ensureArrayObject($request->getModel());
 
         $sandbox = (bool) $this->api['sandbox'];
@@ -62,6 +66,7 @@ class GPWebpayAction implements ApiAwareInterface, ActionInterface
             return;
         }
 
+        assert($request instanceof TokenAggregateInterface);
         // New order
         /** @var TokenInterface $token */
         $token = $request->getToken();
@@ -70,6 +75,7 @@ class GPWebpayAction implements ApiAwareInterface, ActionInterface
 
         if ($response) {
             $model['orderId'] = $response['orderId'];
+            assert($request instanceof ModelAwareInterface);
             $request->setModel($model);
 
             throw new HttpRedirect($response['gatewayLocationUrl']);
@@ -88,11 +94,9 @@ class GPWebpayAction implements ApiAwareInterface, ActionInterface
             $request->getModel() instanceof \ArrayObject;
     }
 
-    /**
-     * @param mixed $model
-     */
-    private function prepareOrder(TokenInterface $token, $model): array
+    private function prepareOrder(TokenInterface $token, mixed $model): array
     {
+        assert(is_array($model) || $model instanceof \ArrayAccess);
         $order = [];
         $order['currency'] = $model['currencyCode'];
         $order['amount'] = $model['totalAmount'];

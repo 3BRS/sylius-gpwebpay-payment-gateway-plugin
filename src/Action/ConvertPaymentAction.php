@@ -23,6 +23,7 @@ class ConvertPaymentAction implements ActionInterface
     {
         RequestNotSupportedException::assertSupports($this, $request);
 
+        assert($request instanceof Convert);
         /** @var PaymentInterface $payment */
         $payment = $request->getSource();
 

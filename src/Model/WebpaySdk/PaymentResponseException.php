@@ -6,18 +6,9 @@ namespace ThreeBRS\SyliusGPWebpayPaymentGatewayPlugin\Model\WebpaySdk;
 
 class PaymentResponseException extends \Exception
 {
-    /** @var int */
-    private $prCode;
-
-    /** @var int */
-    private $srCode;
-
-    public function __construct(int $prCode, int $srCode = 0, string $message = '', \Exception $previous = null)
+    public function __construct(private readonly int $prCode, private readonly int $srCode = 0, string $message = '', \Exception $previous = null)
     {
-        $this->prCode = $prCode;
-        $this->srCode = $srCode;
-
-        parent::__construct($message, $prCode, $previous);
+        parent::__construct($message, $this->prCode, $previous);
     }
 
     public function getPrCode(): int

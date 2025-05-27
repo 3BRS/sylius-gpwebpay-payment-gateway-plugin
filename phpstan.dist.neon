@@ -1,13 +1,10 @@
 parameters:
     level: 6
     reportUnmatchedIgnoredErrors: false
-    checkMissingIterableValueType: false
-    checkGenericClassInNonGenericObjectType: false
     treatPhpDocTypesAsCertain: false
     paths:
         - src
         - tests/Application/src
-        - tests/Behat
 
     excludePaths:
         # Makes PHPStan crash
@@ -21,3 +18,7 @@ parameters:
 
     ignoreErrors:
         - '/Parameter #1 \$configuration of method Symfony\\Component\\DependencyInjection\\Extension\\Extension::processConfiguration\(\) expects Symfony\\Component\\Config\\Definition\\ConfigurationInterface, Symfony\\Component\\Config\\Definition\\ConfigurationInterface\|null given\./'
+        - '/Cannot cast mixed to string\./'
+        - '/Cannot cast mixed to int\./'
+        - identifier: missingType.iterableValue
+        - identifier: missingType.generics

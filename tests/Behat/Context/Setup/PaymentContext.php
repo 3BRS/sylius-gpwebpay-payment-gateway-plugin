@@ -13,33 +13,8 @@ use Sylius\Component\Payment\Repository\PaymentMethodRepositoryInterface;
 
 final class PaymentContext implements Context
 {
-    /** @var SharedStorageInterface */
-    private $sharedStorage;
-
-    /** @var PaymentMethodRepositoryInterface */
-    private $paymentMethodRepository;
-
-    /** @var ExampleFactoryInterface */
-    private $paymentMethodExampleFactory;
-
-    /** @var ObjectManager */
-    private $paymentMethodManager;
-
-    /** @var array */
-    private $gatewayFactories;
-
-    public function __construct(
-        SharedStorageInterface $sharedStorage,
-        PaymentMethodRepositoryInterface $paymentMethodRepository,
-        ExampleFactoryInterface $paymentMethodExampleFactory,
-        ObjectManager $paymentMethodManager,
-        array $gatewayFactories,
-    ) {
-        $this->sharedStorage = $sharedStorage;
-        $this->paymentMethodRepository = $paymentMethodRepository;
-        $this->paymentMethodExampleFactory = $paymentMethodExampleFactory;
-        $this->paymentMethodManager = $paymentMethodManager;
-        $this->gatewayFactories = $gatewayFactories;
+    public function __construct(private readonly SharedStorageInterface $sharedStorage, private readonly PaymentMethodRepositoryInterface $paymentMethodRepository, private readonly ExampleFactoryInterface $paymentMethodExampleFactory, private readonly ObjectManager $paymentMethodManager, private readonly array $gatewayFactories)
+    {
     }
 
     /**
@@ -50,7 +25,9 @@ final class PaymentContext implements Context
         string $paymentMethodCode,
     ): void {
         $paymentMethod = $this->createPaymentMethod($paymentMethodName, $paymentMethodCode, 'GP webpay');
-        $paymentMethod->getGatewayConfig()->setConfig([
+        $gatewayConfig = $paymentMethod->getGatewayConfig();
+        assert($gatewayConfig !== null, 'Gateway config should not be null');
+        $gatewayConfig->setConfig([
             'merchantNumber' => 'TEST',
             'keyPrivateName' => 'TEST',
             'keyPrivatePassword' => 'TEST',
