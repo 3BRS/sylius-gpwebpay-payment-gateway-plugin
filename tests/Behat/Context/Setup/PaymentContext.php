@@ -11,14 +11,14 @@ use Sylius\Bundle\CoreBundle\Fixture\Factory\ExampleFactoryInterface;
 use Sylius\Component\Core\Model\PaymentMethodInterface;
 use Sylius\Component\Payment\Repository\PaymentMethodRepositoryInterface;
 
-final class PaymentContext implements Context
+final readonly class PaymentContext implements Context
 {
     public function __construct(
-        private readonly SharedStorageInterface $sharedStorage,
-        private readonly PaymentMethodRepositoryInterface $paymentMethodRepository,
-        private readonly ExampleFactoryInterface $paymentMethodExampleFactory,
-        private readonly ObjectManager $paymentMethodManager,
-        private readonly array $gatewayFactories,
+        private SharedStorageInterface $sharedStorage,
+        private PaymentMethodRepositoryInterface $paymentMethodRepository,
+        private ExampleFactoryInterface $paymentMethodExampleFactory,
+        private ObjectManager $paymentMethodManager,
+        private array $gatewayFactories,
     ) {
     }
 

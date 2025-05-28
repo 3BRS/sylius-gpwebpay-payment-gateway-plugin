@@ -7,10 +7,10 @@ namespace Tests\ThreeBRS\SyliusGPWebpayPaymentGatewayPlugin\Behat\Context\Ui\Adm
 use Behat\Behat\Context\Context;
 use Tests\ThreeBRS\SyliusGPWebpayPaymentGatewayPlugin\Behat\Pages\Admin\PaymentMethod\EditPageInterface;
 
-final class ManagingPaymentMethodsContext implements Context
+final readonly class ManagingPaymentMethodsContext implements Context
 {
     public function __construct(
-        private readonly EditPageInterface $updatePage,
+        private EditPageInterface $updatePage,
     ) {
     }
 
