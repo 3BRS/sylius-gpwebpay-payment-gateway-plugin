@@ -27,6 +27,20 @@ final class GPWebpayGatewayConfigurationType extends AbstractType
                 'label' => 'theebrs-sylius.gpwebpay_plugin.form.sandbox',
                 'required' => false,
             ])
+            ->add('preferredPaymentMethod', ChoiceType::class, [
+                'multiple' => false,
+                'expanded' => false,
+                'label' => 'theebrs-sylius.gpwebpay_plugin.form.preferredPaymentMethod',
+                'required' => false,
+                'choices' => array_flip($this->choices),
+            ])
+            ->add('allowedPaymentMethods', ChoiceType::class, [
+                'multiple' => true,
+                'expanded' => true,
+                'label' => 'theebrs-sylius.gpwebpay_plugin.form.allowedPaymentMethods',
+                'required' => false,
+                'choices' => array_flip($this->choices),
+            ])
             ->add('merchantNumber', TextType::class, [
                 'label' => 'theebrs-sylius.gpwebpay_plugin.form.merchantNumber',
                 'constraints' => [
@@ -42,13 +56,9 @@ final class GPWebpayGatewayConfigurationType extends AbstractType
                         'groups' => ['sylius'],
                     ]),
                 ],
-            ])
-            ->add('preferredPaymentMethod', ChoiceType::class, [
-                'multiple' => false,
-                'expanded' => false,
-                'label' => 'theebrs-sylius.gpwebpay_plugin.form.preferredPaymentMethod',
-                'required' => false,
-                'choices' => array_flip($this->choices),
+                'attr' => [
+                    'autocomplete' => 'new-password',
+                ],
             ])
             ->add('keyPrivate', TextareaType::class, [
                 'label' => 'theebrs-sylius.gpwebpay_plugin.form.privateKey',
@@ -57,13 +67,9 @@ final class GPWebpayGatewayConfigurationType extends AbstractType
                         'groups' => ['sylius'],
                     ]),
                 ],
-            ])
-            ->add('allowedPaymentMethods', ChoiceType::class, [
-                'multiple' => true,
-                'expanded' => true,
-                'label' => 'theebrs-sylius.gpwebpay_plugin.form.allowedPaymentMethods',
-                'required' => false,
-                'choices' => array_flip($this->choices),
+                'attr' => [
+                    'autocomplete' => 'new-password',
+                ],
             ])
         ;
     }
