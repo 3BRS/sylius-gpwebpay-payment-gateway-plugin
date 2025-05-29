@@ -1,0 +1,8 @@
+{% set form = hookable_metadata.context.form.gatewayConfig.config %}
+{# @var \Symfony\Component\Form\FormView form #}
+
+{% for childName, child in form.children %}
+<div class="col-12{% if childName != 'sandbox' and childName != 'keyPrivate' %} col-md-6{% endif %}">
+    {{ form_row(child, sylius_test_form_attribute('config-' ~ childName)|merge({ label_attr: { class: 'checkbox-switch' } })) }}
+</div>
+{% endfor %}

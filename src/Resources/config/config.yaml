@@ -1,0 +1,3 @@
+imports:
+    - { resource: '@ThreeBRSSyliusGPWebpayPaymentGatewayPlugin/Resources/config/services.yaml' }
+    - { resource: '@ThreeBRSSyliusGPWebpayPaymentGatewayPlugin/Resources/config/sylius_twig_hooks.yaml' }

@@ -21,15 +21,6 @@ services:
             $requestStack: '@request_stack'
             $logger: '@sylius_fixtures.logger'
 
-    theebrs_sylius:gpwebpay-payment-gateway-plugin:gpwebpay_gateway_factory:
-        public: true
-        class: Payum\Core\Bridge\Symfony\Builder\GatewayFactoryBuilder
-        arguments:
-            $gatewayFactoryClass: ThreeBRS\SyliusGPWebpayPaymentGatewayPlugin\GPWebpayGatewayFactory
-        tags:
-            - name: payum.gateway_factory_builder
-              factory: gpwebpay
-
     ThreeBRS\SyliusGPWebpayPaymentGatewayPlugin\Form\Type\GPWebpayGatewayConfigurationType:
         arguments:
             $choices: '%theebrs_sylius_gpwebpay_payment_gateway_plugin_payment_methods%'

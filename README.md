@@ -27,6 +27,18 @@
       ThreeBRS\SyliusGPWebpayPaymentGatewayPlugin\ThreeBRSSyliusGPWebpayPaymentGatewayPlugin::class => ['all' => true],
    ];
    ```
+1. Load plugin configuration by `config/packages/threebrs_sylius_gpwebpay_payment_gateway_plugin.yaml`:
+
+   ```yaml
+   imports:
+    - { resource: "@ThreeBRSSyliusGPWebpayPaymentGatewayPlugin/Resources/config/config.yaml" }
+   ```
+
+1. generate keys to keep gateway credentials safe:
+
+   ```bash
+   bin/console sylius:payment:generate-key
+   ```
   
 ## Usage
 
