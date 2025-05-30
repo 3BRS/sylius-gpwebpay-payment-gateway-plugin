@@ -4,18 +4,13 @@ declare(strict_types=1);
 
 namespace ThreeBRS\SyliusGPWebpayPaymentGatewayPlugin\Model\WebpaySdk;
 
-/**
- * Payment Requester class
- */
-class PaymentRequest
+class GpWebPayPaymentRequest
 {
     protected array $params = [];
 
     /**
-     * Payment Requester
-     *
      * @param int $orderNumber Payments number - must be in each request from trader unique.
-     * @param float $amount Price to pay
+     * @param float $amount Price to pay in the smallest currency unit (e.g. cents for EUR, USD, etc.). For example, if the price is 100.00 EUR, you should pass 10000.
      * @param int $currency Currency code ISO 4217
      * @param int $depositFlag Request Indicates whether the payment is to be paid automatically. Allowed values: 0 = no immediate payment required 1 = payment is required
      * @param string $url Full Merchant URL. A result will be sent to this address  request. The result is forwarded over customer browser

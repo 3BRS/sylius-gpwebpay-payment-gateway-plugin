@@ -4,37 +4,25 @@ declare(strict_types=1);
 
 namespace ThreeBRS\SyliusGPWebpayPaymentGatewayPlugin\Api;
 
-use Payum\ISO4217\ISO4217;
+use Alcohol\ISO4217;
 use Psr\Log\LoggerInterface;
 use Sylius\Component\Core\Context\ShopperContextInterface;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Contracts\Translation\TranslatorInterface;
 use ThreeBRS\SyliusGPWebpayPaymentGatewayPlugin\Model\WebpaySdk\Api;
-use ThreeBRS\SyliusGPWebpayPaymentGatewayPlugin\Model\WebpaySdk\PaymentRequest;
+use ThreeBRS\SyliusGPWebpayPaymentGatewayPlugin\Model\WebpaySdk\GpWebPayPaymentRequest;
 use ThreeBRS\SyliusGPWebpayPaymentGatewayPlugin\Model\WebpaySdk\PaymentResponse;
 use ThreeBRS\SyliusGPWebpayPaymentGatewayPlugin\Model\WebpaySdk\PaymentResponseException;
 use ThreeBRS\SyliusGPWebpayPaymentGatewayPlugin\Model\WebpaySdk\Signer;
 
 class GPWebpayApi implements GPWebpayApiInterface
 {
-    protected ShopperContextInterface $shopperContext;
-
-    protected TranslatorInterface $translator;
-
-    protected LoggerInterface $logger;
-
-    protected RequestStack $requestStack;
-
     public function __construct(
-        TranslatorInterface $translator,
-        ShopperContextInterface $shopperContext,
-        LoggerInterface $logger,
-        RequestStack $requestStack,
+        protected TranslatorInterface $translator,
+        protected ShopperContextInterface $shopperContext,
+        protected LoggerInterface $logger,
+        protected RequestStack $requestStack,
     ) {
-        $this->translator = $translator;
-        $this->shopperContext = $shopperContext;
-        $this->logger = $logger;
-        $this->requestStack = $requestStack;
     }
 
     protected function createApi(
@@ -56,24 +44,42 @@ class GPWebpayApi implements GPWebpayApiInterface
         return new Api($merchantNumber, $apiEndpoint, $signer);
     }
 
-    protected function getCurrency(string $currencyCode): int
+    protected function getCurrency(?string $currencyCode): ?int
     {
-        $iso4217 = new ISO4217();
-        $currency = $iso4217->findByAlpha3($currencyCode);
+        if ($currencyCode === null) {
+            // if not given, default currency from the merchant’s or bank’s settings is used
+            return null;
+        }
+        $currency = (new ISO4217())->getByAlpha3($currencyCode);
 
-        return (int) $currency->getNumeric();
+        return (int) $currency['numeric'];
     }
 
+    /**
+     * @param array{
+     *     orderNumber: int|string,
+     *     amount: int,
+     *     currency: string|null,
+     *     returnUrl: string,
+     *     psd2: string|null|void,
+     * } $order
+     * @param array<string>|null $allowedPaymentMethods
+     *
+     * @return array{
+     *     orderId: int,
+     *     gatewayLocationUrl: string
+     * }
+     */
     public function create(
         array $order,
         string $merchantNumber,
         bool $sandbox,
         string $clientPrivateKey,
-        string $keyPassword,
+        string $clientPrivateKeyPassword,
         ?string $preferredPaymentMethod,
         ?array $allowedPaymentMethods,
     ): array {
-        $api = $this->createAPI($sandbox, $clientPrivateKey, $keyPassword, $merchantNumber);
+        $api = $this->createAPI($sandbox, $clientPrivateKey, $clientPrivateKeyPassword, $merchantNumber);
 
         $orderNumber = (int) $order['orderNumber'];
         $amount = $order['amount'] / 100;
@@ -83,7 +89,7 @@ class GPWebpayApi implements GPWebpayApiInterface
         $merOrderNumber = null;
         $psd2 = $order['psd2'] ?? null;
 
-        $request = new PaymentRequest($orderNumber, $amount, $currency, $depositFlag, $url, $merOrderNumber);
+        $request = new GpWebPayPaymentRequest($orderNumber, $amount, $currency, $depositFlag, $url, $merOrderNumber);
         if ($preferredPaymentMethod !== null && $preferredPaymentMethod !== '') {
             $request->setPreferredPaymentMethod($preferredPaymentMethod);
         }
@@ -128,7 +134,7 @@ class GPWebpayApi implements GPWebpayApiInterface
         try {
             $api = $this->createAPI($sandbox, $clientPrivateKey, $keyPassword, $merchantNumber);
             $api->verifyPaymentResponse($response);
-        } catch (PaymentResponseException|\Exception $e) {
+        } catch (PaymentResponseException | \Exception $e) {
             $this->logger->error($e->getMessage());
 
             return GPWebpayApiInterface::CANCELED;

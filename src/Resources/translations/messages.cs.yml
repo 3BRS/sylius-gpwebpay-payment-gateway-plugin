@@ -9,3 +9,4 @@ theebrs:
             keyPassword: Heslo pro soukromý klíč
             preferredPaymentMethod: Preferovaná platebmí metoda na bráně
             allowedPaymentMethods: Povolené platebmí metody
+            givenPrivateKeyAndPasswordDoNotMatch: Předaný soukromý klíč a heslo k sobě nepasují

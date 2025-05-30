@@ -12,12 +12,27 @@ interface GPWebpayApiInterface
 
     public const CANCELED = 'CANCELED';
 
+    /**
+     * @param array{
+     *    orderNumber: int|string,
+     *    amount: int,
+     *    currency: string|null,
+     *    returnUrl: string,
+     *    psd2: string|null|void
+     * } $order
+     * @param array<string>|null $allowedPaymentMethods
+     *
+     * @return array{
+     *      orderId: int,
+     *      gatewayLocationUrl: string
+     *  }
+     */
     public function create(
         array $order,
         string $merchantNumber,
         bool $sandbox,
         string $clientPrivateKey,
-        string $keyPassword,
+        string $clientPrivateKeyPassword,
         ?string $preferredPaymentMethod,
         ?array $allowedPaymentMethods,
     ): array;

@@ -9,3 +9,4 @@ theebrs-sylius:
             keyPassword: Key Password
             preferredPaymentMethod: Preferred Payment Method
             allowedPaymentMethods: Allowed Payment Methods
+            givenPrivateKeyAndPasswordDoNotMatch: Given private key and password do not match

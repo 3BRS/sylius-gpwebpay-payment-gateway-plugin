@@ -17,10 +17,12 @@ class Signer
         private readonly string $privateKeyPassword,
         string $publicKey,
     ) {
-        if (!file_exists($publicKey) || !is_readable($publicKey)) {
-            throw new SignerException("Public key ({$publicKey}) not exists or not readable!");
-        }
         $this->publicKey = $publicKey;
+    }
+
+    public function isPrivateKeyAndPasswordValid(): bool
+    {
+        return openssl_pkey_get_private($this->privateKey, $this->privateKeyPassword) !== false;
     }
 
     /**
@@ -28,13 +30,13 @@ class Signer
      */
     private function getPrivateKeyResource(): \OpenSSLAsymmetricKey
     {
-        if ($this->privateKeyResource) {
+        if ($this->privateKeyResource ?? null) {
             return $this->privateKeyResource;
         }
 
         $privateKeyResource = openssl_pkey_get_private($this->privateKey, $this->privateKeyPassword);
         if (!$privateKeyResource) {
-            throw new SignerException("'{$this->privateKey}' is not valid PEM private key (or passphrase is incorrect).");
+            throw new SignerException('Given key is not valid PEM private key, or passphrase is incorrect.');
         }
 
         $this->privateKeyResource = $privateKeyResource;
@@ -42,26 +44,33 @@ class Signer
         return $this->privateKeyResource;
     }
 
+    /**
+     * @throws SignerException
+     */
     public function sign(array $params): string
     {
         $digestText = implode('|', $params);
-        openssl_sign($digestText, $digest, $this->getPrivateKeyResource());
+        if (!openssl_sign($digestText, $digest, $this->getPrivateKeyResource())) {
+            throw new SignerException('Failed to sign the data.');
+        }
 
-        return base64_encode((string) $digest);
+        return base64_encode($digest);
     }
 
     /**
      * @throws SignerException
      */
-    public function verify(array $params, string $digest): bool
-    {
+    public function verify(
+        array $params,
+        string $digest,
+    ): bool {
         $data = implode('|', $params);
         $digest = base64_decode($digest);
         assert($digest !== false);
 
-        $ok = openssl_verify($data, $digest, $this->getPublicKeyResource());
+        $result = openssl_verify($data, $digest, $this->getPublicKeyResource());
 
-        if ($ok !== 1) {
+        if ($result !== 1) {
             throw new SignerException('Digest is not correct!');
         }
 
@@ -75,6 +84,10 @@ class Signer
     {
         if ($this->publicKeyResource) {
             return $this->publicKeyResource;
+        }
+
+        if (!file_exists($this->publicKey) || !is_readable($this->publicKey)) {
+            throw new SignerException("Public key ({$this->publicKey}) not exists or not readable!");
         }
 
         $fp = fopen($this->publicKey, 'rb');

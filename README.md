@@ -44,6 +44,20 @@
 
 * <b>Create GP webpay payment type</b><br>in Sylius admin panel, _Configuration -> Payment methods_<br>
 
+## Sylius 2 pay workflow
+
+- Customer hit _Pay_ button
+- Request goes to `\Sylius\Bundle\CoreBundle\OrderPay\Controller\OrderPayController::payAction`
+- That will emit redirect 302 by `\Sylius\Bundle\CoreBundle\OrderPay\Provider\PaymentRequestPayResponseProvider::getResponse` to route like `/en_US/payment-request/pay/0197204a-8284-7301-9b30-e151c7d14ec5`
+- That request goes to `\Sylius\Bundle\CoreBundle\OrderPay\Action\PaymentRequestPayAction::__invoke`
+  - that will dispatch command to process the payment in `\Sylius\Bundle\PaymentBundle\Processor\HttpResponseProcessor::process`
+  - that will find command provider fitting the payment method in `\Sylius\Bundle\PaymentBundle\CommandProvider\AbstractServiceCommandProvider::provide`, in our case `\ThreeBRS\SyliusGPWebpayPaymentGatewayPlugin\CommandProvider\CapturePaymentRequestCommandProvider`
+  - the provider will give command `\ThreeBRS\SyliusGPWebpayPaymentGatewayPlugin\Command\CapturePaymentRequest`
+  - that will be handled by `\ThreeBRS\SyliusGPWebpayPaymentGatewayPlugin\CommandHandler\CapturePaymentRequestHandler`
+    - ⚠️ if messenger is configured as async, the payment will not be processed immediately and customer will end on Pay page again ⚠️
+    - that command handler may resolve the payment, but in our case it will just prepare payload for the payment gateway webpage
+  - then the "capture" response is processed by `\ThreeBRS\SyliusGPWebpayPaymentGatewayPlugin\ResponseProvider\CaptureHttpResponseProvider` which in our case will return a redirect to the payment gateway webpage
+
 ## Development
 
 ### Usage
