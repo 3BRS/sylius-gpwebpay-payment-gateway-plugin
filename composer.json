@@ -13,7 +13,7 @@
         "php": "^8.2",
         "ext-openssl": "*",
         "ext-simplexml": "*",
-        "payum/iso4217": "^1.0",
+      "alcohol/iso4217": "^4.2",
         "sylius/sylius": "2.0.*"
     },
     "require-dev": {

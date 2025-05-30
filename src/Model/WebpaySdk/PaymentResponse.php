@@ -4,9 +4,19 @@ declare(strict_types=1);
 
 namespace ThreeBRS\SyliusGPWebpayPaymentGatewayPlugin\Model\WebpaySdk;
 
-class PaymentResponse
+readonly class PaymentResponse
 {
-    protected array $params = [];
+    /**
+     * @var array{
+     *        operation: string,
+     *        ordermumber: string,
+     *        prcode: int,
+     *        srcode: int,
+     *        resulttext: string,
+     *        merordernum: string|void,
+     * }
+     */
+    protected array $params;
 
     protected string $digest;
 
@@ -22,18 +32,30 @@ class PaymentResponse
         string $digest,
         string $digest1,
     ) {
-        $this->params['operation'] = $operation;
-        $this->params['ordermumber'] = $ordernumber;
-        if ($merordernum !== null) {
-            $this->params['merordernum'] = $merordernum;
-        }
-        $this->params['prcode'] = $prcode;
-        $this->params['srcode'] = $srcode;
-        $this->params['resulttext'] = $resulttext;
+        $this->params = [
+            ...[
+                'operation' => $operation,
+                'ordermumber' => $ordernumber,
+                'prcode' => $prcode,
+                'srcode' => $srcode,
+                'resulttext' => $resulttext,
+            ],
+            ...($merordernum !== null ? ['merordernum' => $merordernum] : []),
+        ];
         $this->digest = $digest;
         $this->digest1 = $digest1;
     }
 
+    /**
+     * @return array{
+     *        operation: string,
+     *        ordermumber: string,
+     *        prcode: int,
+     *        srcode: int,
+     *        resulttext: string,
+     *        merordernum: string|void,
+     * }
+     */
     public function getParams(): array
     {
         return $this->params;
@@ -46,7 +68,7 @@ class PaymentResponse
 
     public function hasError(): bool
     {
-        return (bool) $this->params['prcode'] || (bool) $this->params['srcode'];
+        return $this->params['prcode'] || $this->params['srcode'];
     }
 
     public function getDigest1(): string

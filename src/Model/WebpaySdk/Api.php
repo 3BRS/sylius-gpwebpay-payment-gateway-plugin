@@ -6,21 +6,18 @@ namespace ThreeBRS\SyliusGPWebpayPaymentGatewayPlugin\Model\WebpaySdk;
 
 use RuntimeException;
 
-class Api
+readonly class Api
 {
     public function __construct(
-        private readonly string $merchantNumber,
-        private readonly string $webPayUrl,
-        private readonly Signer $signer,
+        private string $merchantNumber,
+        private string $webPayUrl,
+        private Signer $signer,
     ) {
     }
 
-    public function createPaymentRequestUrl(PaymentRequest $request): string
+    public function createPaymentRequestUrl(GpWebPayPaymentRequest $request): string
     {
-        // build request URL based on PaymentRequest
-        $paymentUrl = $this->webPayUrl . '?' . http_build_query($this->createPaymentParam($request));
-
-        return $paymentUrl;
+        return $this->webPayUrl . '?' . http_build_query($this->createPaymentParam($request));
     }
 
     public function createPaymentPostRequestUrl(): string
@@ -28,7 +25,7 @@ class Api
         return $this->webPayUrl;
     }
 
-    public function createPaymentParam(PaymentRequest $request): array
+    public function createPaymentParam(GpWebPayPaymentRequest $request): array
     {
         // digest request
         $request->setMerchantNumber($this->merchantNumber);

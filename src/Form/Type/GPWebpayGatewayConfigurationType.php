@@ -10,12 +10,31 @@ use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
+use Symfony\Component\Form\FormError;
+use Symfony\Component\Form\FormEvent;
+use Symfony\Component\Form\FormEvents;
 use Symfony\Component\Validator\Constraints\NotBlank;
+use Symfony\Contracts\Translation\TranslatorInterface;
+use ThreeBRS\SyliusGPWebpayPaymentGatewayPlugin\Model\WebpaySdk\Signer;
 
 final class GPWebpayGatewayConfigurationType extends AbstractType
 {
-    public function __construct(private readonly array $choices)
-    {
+    public const SANDBOX = 'sandbox';
+
+    public const PREFERRED_PAYMENT_METHOD = 'preferredPaymentMethod';
+
+    public const ALLOWED_PAYMENT_METHODS = 'allowedPaymentMethods';
+
+    public const MERCHANT_NUMBER = 'merchantNumber';
+
+    public const KEY_PRIVATE_PASSWORD = 'keyPrivatePassword';
+
+    public const KEY_PRIVATE = 'keyPrivate';
+
+    public function __construct(
+        private readonly array $choices,
+        private readonly TranslatorInterface $translator,
+    ) {
     }
 
     public function buildForm(
@@ -23,33 +42,36 @@ final class GPWebpayGatewayConfigurationType extends AbstractType
         array $options,
     ): void {
         $builder
-            ->add('sandbox', CheckboxType::class, [
+            ->add(self::SANDBOX, CheckboxType::class, [
                 'label' => 'theebrs-sylius.gpwebpay_plugin.form.sandbox',
                 'required' => false,
             ])
-            ->add('preferredPaymentMethod', ChoiceType::class, [
+            ->add(self::PREFERRED_PAYMENT_METHOD, ChoiceType::class, [
                 'multiple' => false,
                 'expanded' => false,
                 'label' => 'theebrs-sylius.gpwebpay_plugin.form.preferredPaymentMethod',
                 'required' => false,
                 'choices' => array_flip($this->choices),
             ])
-            ->add('allowedPaymentMethods', ChoiceType::class, [
+            ->add(self::ALLOWED_PAYMENT_METHODS, ChoiceType::class, [
                 'multiple' => true,
                 'expanded' => true,
                 'label' => 'theebrs-sylius.gpwebpay_plugin.form.allowedPaymentMethods',
                 'required' => false,
                 'choices' => array_flip($this->choices),
             ])
-            ->add('merchantNumber', TextType::class, [
+            ->add(self::MERCHANT_NUMBER, TextType::class, [
                 'label' => 'theebrs-sylius.gpwebpay_plugin.form.merchantNumber',
                 'constraints' => [
                     new NotBlank([
                         'groups' => ['sylius'],
                     ]),
                 ],
+                'attr' => [
+                    'autocomplete' => 'off',
+                ],
             ])
-            ->add('keyPrivatePassword', TextType::class, [
+            ->add(self::KEY_PRIVATE_PASSWORD, TextType::class, [
                 'label' => 'theebrs-sylius.gpwebpay_plugin.form.keyPassword',
                 'constraints' => [
                     new NotBlank([
@@ -57,10 +79,10 @@ final class GPWebpayGatewayConfigurationType extends AbstractType
                     ]),
                 ],
                 'attr' => [
-                    'autocomplete' => 'new-password',
+                    'autocomplete' => 'off',
                 ],
             ])
-            ->add('keyPrivate', TextareaType::class, [
+            ->add(self::KEY_PRIVATE, TextareaType::class, [
                 'label' => 'theebrs-sylius.gpwebpay_plugin.form.privateKey',
                 'constraints' => [
                     new NotBlank([
@@ -68,9 +90,29 @@ final class GPWebpayGatewayConfigurationType extends AbstractType
                     ]),
                 ],
                 'attr' => [
-                    'autocomplete' => 'new-password',
+                    'autocomplete' => 'off',
                 ],
-            ])
-        ;
+            ]);
+
+        $builder->addEventListener(FormEvents::POST_SUBMIT, function (
+            FormEvent $event,
+        ) {
+            $data = $event->getData();
+            $signer = new Signer(
+                $data[self::KEY_PRIVATE] ?? '',
+                $data[self::KEY_PRIVATE_PASSWORD] ?? '',
+                '',
+            );
+            if (!$signer->isPrivateKeyAndPasswordValid()) {
+                $form = $event->getForm();
+                $message = $this->translator->trans('theebrs-sylius.gpwebpay_plugin.form.givenPrivateKeyAndPasswordDoNotMatch');
+                $form->get(self::KEY_PRIVATE)->addError(
+                    new FormError($message),
+                );
+                $form->get(self::KEY_PRIVATE_PASSWORD)->addError(
+                    new FormError($message),
+                );
+            }
+        });
     }
 }

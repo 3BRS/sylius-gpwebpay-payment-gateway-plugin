@@ -24,7 +24,7 @@ init:
 	./bin-docker/yarn --cwd=tests/Application install --pure-lockfile
 	GULP_ENV=prod ./bin-docker/yarn --cwd=tests/Application build
 	chmod -R 0777 tests/Application/var
-	./bin-docker/php .bin/console sylius:payment:generate-key --no-interaction
+	./bin-docker/php .bin/console --env="$(APP_ENV)" sylius:payment:generate-key --no-interaction
 
 init-tests:
 	which docker > /dev/null || (echo "Please install docker binary" && exit 1)
