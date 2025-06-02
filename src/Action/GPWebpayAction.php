@@ -11,7 +11,7 @@ use Payum\Core\Exception\RequestNotSupportedException;
 use Payum\Core\Exception\UnsupportedApiException;
 use Payum\Core\Model\ModelAggregateInterface;
 use Payum\Core\Model\ModelAwareInterface;
-use Payum\Core\Reply\HttpRedirect;
+use Payum\Core\Reply\HttpPostRedirect;
 use Payum\Core\Security\TokenAggregateInterface;
 use Payum\Core\Security\TokenInterface;
 use ThreeBRS\SyliusGPWebpayPaymentGatewayPlugin\Api\GPWebpayApiInterface;
@@ -19,15 +19,16 @@ use ThreeBRS\SyliusGPWebpayPaymentGatewayPlugin\SetGPWebpay;
 
 class GPWebpayAction implements ApiAwareInterface, ActionInterface
 {
-    /** @var GPWebpayApiInterface */
-    protected $gpWebPayApi;
+    protected GPWebpayApiInterface $gpWebPayApi;
 
-    /** @var array */
-    private $api = [];
+    private array $api = [];
 
-    /**
-     * @param mixed $api
-     */
+    public function __construct(GPWebpayApiInterface $gpWebPayApi)
+    {
+        $this->gpWebPayApi = $gpWebPayApi;
+    }
+
+    /** @param mixed $api */
     public function setApi($api): void
     {
         if (!is_array($api)) {
@@ -37,18 +38,14 @@ class GPWebpayAction implements ApiAwareInterface, ActionInterface
         $this->api = $api;
     }
 
-    public function __construct(GPWebpayApiInterface $gpWebPayApi)
-    {
-        $this->gpWebPayApi = $gpWebPayApi;
-    }
-
     /**
      * @param mixed $request
      */
     public function execute($request): void
     {
-        RequestNotSupportedException::assertSupports($this, $request);
         assert($request instanceof ModelAggregateInterface);
+
+        RequestNotSupportedException::assertSupports($this, $request);
         $model = ArrayObject::ensureArrayObject($request->getModel());
 
         $sandbox = (bool) $this->api['sandbox'];
@@ -66,10 +63,10 @@ class GPWebpayAction implements ApiAwareInterface, ActionInterface
             return;
         }
 
-        assert($request instanceof TokenAggregateInterface);
         // New order
-        /** @var TokenInterface $token */
+        assert($request instanceof TokenAggregateInterface);
         $token = $request->getToken();
+        assert($token !== null);
         $order = $this->prepareOrder($token, $model);
         $response = $this->gpWebPayApi->create($order, $merchantNumber, $sandbox, $clientPrivateKey, $keyPassword, $preferredPaymentMethod, $allowedPaymentMethods);
 
@@ -78,7 +75,7 @@ class GPWebpayAction implements ApiAwareInterface, ActionInterface
             assert($request instanceof ModelAwareInterface);
             $request->setModel($model);
 
-            throw new HttpRedirect($response['gatewayLocationUrl']);
+            throw new HttpPostRedirect($response['gatewayLocationUrl'], $response['gatewayPostData']);
         }
 
         throw new \RuntimeException();
@@ -94,13 +91,15 @@ class GPWebpayAction implements ApiAwareInterface, ActionInterface
             $request->getModel() instanceof \ArrayObject;
     }
 
-    private function prepareOrder(TokenInterface $token, mixed $model): array
-    {
-        assert(is_array($model) || $model instanceof \ArrayAccess);
+    private function prepareOrder(
+        TokenInterface $token,
+        ArrayObject $model,
+    ): array {
         $order = [];
         $order['currency'] = $model['currencyCode'];
         $order['amount'] = $model['totalAmount'];
         $order['orderNumber'] = $model['number'];
+        $order['psd2'] = $model['psd2'];
         $order['returnUrl'] = $token->getTargetUrl();
 
         return $order;

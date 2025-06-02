@@ -60,7 +60,7 @@ services:
             # - set MYSQL_HOST_MAPPING_PORT variable in .env file for example
             # - or extends ports in docker-compose.override.yml
             # To find out used port use `docker ps` and look for PORTS column to see mapped host port, including IP it can be for example 0.0.0.0:32772 which is roughly equivalent to 127.0.0.1:32772 for internal network requests
-            - "${MYSQL_HOST_MAPPING_PORT:-0}:3306"
+            - "${MYSQL_HOST_MAPPING_PORT:-3306}:3306"
         networks:
             - sylius
 

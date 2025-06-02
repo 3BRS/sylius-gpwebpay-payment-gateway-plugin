@@ -9,8 +9,7 @@ namespace ThreeBRS\SyliusGPWebpayPaymentGatewayPlugin\Model\WebpaySdk;
  */
 class PaymentRequest
 {
-    /** @var array */
-    protected $params = [];
+    protected array $params = [];
 
     /**
      * Payment Requester
@@ -22,8 +21,14 @@ class PaymentRequest
      * @param string $url Full Merchant URL. A result will be sent to this address  request. The result is forwarded over customer browser
      * @param string|null $merOrderNumber Order Number. In case it is not specified, it will be used  value $orderNumber It will appear on the bank statement.
      */
-    public function __construct(int $orderNumber, float $amount, int $currency, int $depositFlag, string $url, ?string $merOrderNumber = null)
-    {
+    public function __construct(
+        int $orderNumber,
+        float $amount,
+        int $currency,
+        int $depositFlag,
+        string $url,
+        ?string $merOrderNumber = null,
+    ) {
         $this->params['MERCHANTNUMBER'] = '';
         $this->params['OPERATION'] = 'CREATE_ORDER';
         $this->params['ORDERNUMBER'] = $orderNumber;
@@ -98,5 +103,36 @@ class PaymentRequest
     public function setAllowedPaymentMethods(string $value): void
     {
         $this->params['PAYMETHODS'] = $value;
+    }
+
+    public function setPsd2Data(array $psd2): void
+    {
+        $xml = new \SimpleXMLElement('<?xml version="1.0" encoding="utf-8"?><additionalInfoRequest xmlns="http://gpe.cz/gpwebpay/additionalInfo/request" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="4.0"/>');
+        $this->toXml($xml, $psd2);
+        $xmlAsString = $xml->asXML();
+        assert($xmlAsString !== false, 'Failed to convert XML to string');
+        $stringXml = str_replace(["\n", "\r"], '', $xmlAsString);
+
+        $this->params['ADDINFO'] = $stringXml;
+    }
+
+    private function toXml(
+        \SimpleXMLElement $object,
+        array $data,
+    ): void {
+        foreach ($data as $key => $value) {
+            if (is_array($value)) {
+                $child = $object->addChild($key);
+                assert($child !== null);
+                $this->toXml($child, $value);
+            } else {
+                // if the key is an integer, it needs text with it to actually work.
+                if ($key !== 0 && $key === (int) $key) {
+                    $key = "key_$key";
+                }
+
+                $object->addChild((string) $key, $value);
+            }
+        }
     }
 }

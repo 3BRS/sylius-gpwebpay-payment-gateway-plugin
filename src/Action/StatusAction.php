@@ -48,11 +48,10 @@ class StatusAction implements ActionInterface
     /**
      * @inheritdoc
      */
-    public function supports($request)
+    public function supports($request): bool
     {
         return
             $request instanceof GetStatusInterface &&
-            $request->getModel() instanceof \ArrayAccess
-        ;
+            $request->getModel() instanceof \ArrayAccess;
     }
 }

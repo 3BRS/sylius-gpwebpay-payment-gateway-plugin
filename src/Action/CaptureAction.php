@@ -49,8 +49,10 @@ class CaptureAction implements ActionInterface, GatewayAwareInterface
             $request->getModel() instanceof \ArrayAccess;
     }
 
-    private function getGPWebpayAction(TokenInterface $token, ArrayObject $model): SetGPWebpay
-    {
+    private function getGPWebpayAction(
+        TokenInterface $token,
+        ArrayObject $model,
+    ): SetGPWebpay {
         $gpWebPayActionAction = new SetGPWebpay($token);
         $gpWebPayActionAction->setModel($model);
 

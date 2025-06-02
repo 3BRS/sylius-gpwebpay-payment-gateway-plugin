@@ -6,17 +6,22 @@ namespace ThreeBRS\SyliusGPWebpayPaymentGatewayPlugin\Model\WebpaySdk;
 
 class PaymentResponse
 {
-    /** @var array */
-    protected $params = [];
+    protected array $params = [];
 
-    /** @var string */
-    protected $digest;
+    protected string $digest;
 
-    /** @var string */
-    protected $digest1;
+    protected string $digest1;
 
-    public function __construct(string $operation, string $ordernumber, ?string $merordernum, int $prcode, int $srcode, string $resulttext, string $digest, string $digest1)
-    {
+    public function __construct(
+        string $operation,
+        string $ordernumber,
+        ?string $merordernum,
+        int $prcode,
+        int $srcode,
+        string $resulttext,
+        string $digest,
+        string $digest1,
+    ) {
         $this->params['operation'] = $operation;
         $this->params['ordermumber'] = $ordernumber;
         if ($merordernum !== null) {

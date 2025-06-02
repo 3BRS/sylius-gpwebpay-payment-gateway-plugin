@@ -48,3 +48,8 @@ services:
               factory: gpwebpay
               alias: payum.action.set_gpwebpay
 
+
+    ThreeBRS\SyliusGPWebpayPaymentGatewayPlugin\Action\ConvertPaymentAction:
+        public: true
+        arguments:
+            $orderRepository: '@sylius.repository.order'

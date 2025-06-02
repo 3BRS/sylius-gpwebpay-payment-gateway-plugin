@@ -12,7 +12,8 @@ init:
 		direnv allow; \
 	fi
 	docker compose up -d
-	./bin-docker/composer install
+	rm -f composer.lock
+	./bin-docker/composer install --no-interaction
 	rm -fr "tests/Application/var/$(APP_ENV)"
 	@make var
 	./bin-docker/php ./bin/console --env="$(APP_ENV)" doctrine:database:create --no-interaction --if-not-exists
@@ -32,7 +33,8 @@ init-tests:
 		direnv allow; \
 	fi
 	docker compose up -d
-	./bin-docker/composer install
+	rm -f composer.lock
+	./bin-docker/composer install --no-interaction
 	rm -fr tests/Application/var/test
 	@make var
 	./bin-docker/php ./bin/console --env=test doctrine:database:drop --no-interaction --force --if-exists

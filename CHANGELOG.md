@@ -1,3 +1,7 @@
+# 2.2
+
+- Add `psd2` details to decrease occurrence of 3D secure challenges
+
 # 2.1
 
 - Add support for Sylius 1.13, 1.14

@@ -7,7 +7,6 @@ namespace ThreeBRS\SyliusGPWebpayPaymentGatewayPlugin;
 use Payum\Core\Bridge\Spl\ArrayObject;
 use Payum\Core\GatewayFactory;
 use ThreeBRS\SyliusGPWebpayPaymentGatewayPlugin\Action\CaptureAction;
-use ThreeBRS\SyliusGPWebpayPaymentGatewayPlugin\Action\ConvertPaymentAction;
 use ThreeBRS\SyliusGPWebpayPaymentGatewayPlugin\Action\StatusAction;
 
 /** @noinspection PhpUnused used in services.yml */
@@ -23,7 +22,7 @@ class GPWebpayGatewayFactory extends GatewayFactory
             'payum.factory_title' => 'GPWebpay',
 
             'payum.action.capture' => new CaptureAction(),
-            'payum.action.convert_payment' => new ConvertPaymentAction(),
+            'payum.action.convert_payment' => '@ThreeBRS\SyliusGPWebpayPaymentGatewayPlugin\Action\ConvertPaymentAction',
             'payum.action.status' => new StatusAction(),
         ]);
 
