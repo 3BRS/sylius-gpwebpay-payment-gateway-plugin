@@ -18,8 +18,10 @@ final class GPWebpayGatewayConfigurationType extends AbstractType
     {
     }
 
-    public function buildForm(FormBuilderInterface $builder, array $options): void
-    {
+    public function buildForm(
+        FormBuilderInterface $builder,
+        array $options,
+    ): void {
         $builder
             ->add('sandbox', CheckboxType::class, [
                 'label' => 'theebrs-sylius.gpwebpay_plugin.form.sandbox',

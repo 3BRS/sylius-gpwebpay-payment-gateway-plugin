@@ -17,17 +17,13 @@ use ThreeBRS\SyliusGPWebpayPaymentGatewayPlugin\Model\WebpaySdk\Signer;
 
 class GPWebpayApi implements GPWebpayApiInterface
 {
-    /** @var ShopperContextInterface */
-    protected $shopperContext;
+    protected ShopperContextInterface $shopperContext;
 
-    /** @var TranslatorInterface */
-    protected $translator;
+    protected TranslatorInterface $translator;
 
-    /** @var LoggerInterface */
-    protected $logger;
+    protected LoggerInterface $logger;
 
-    /** @var RequestStack */
-    protected $requestStack;
+    protected RequestStack $requestStack;
 
     public function __construct(
         TranslatorInterface $translator,
@@ -41,8 +37,12 @@ class GPWebpayApi implements GPWebpayApiInterface
         $this->requestStack = $requestStack;
     }
 
-    protected function createApi(bool $sandbox, string $clientPrivateKey, string $keyPassword, string $merchantNumber): Api
-    {
+    protected function createApi(
+        bool $sandbox,
+        string $clientPrivateKey,
+        string $keyPassword,
+        string $merchantNumber,
+    ): Api {
         $serverCert = $sandbox
             ? __DIR__ . '/../Resources/keys/serverKeys/sandbox/gpe.signing_test.pem'
             : __DIR__ . '/../Resources/keys/serverKeys/prod/gpe.signing_prod.pem';
@@ -64,9 +64,16 @@ class GPWebpayApi implements GPWebpayApiInterface
         return (int) $currency->getNumeric();
     }
 
-    public function create(array $order, string $merchantNumber, bool $sandbox, string $keyName, string $keyPassword, ?string $preferredPaymentMethod, ?array $allowedPaymentMethods): array
-    {
-        $api = $this->createAPI($sandbox, $keyName, $keyPassword, $merchantNumber);
+    public function create(
+        array $order,
+        string $merchantNumber,
+        bool $sandbox,
+        string $clientPrivateKey,
+        string $keyPassword,
+        ?string $preferredPaymentMethod,
+        ?array $allowedPaymentMethods,
+    ): array {
+        $api = $this->createAPI($sandbox, $clientPrivateKey, $keyPassword, $merchantNumber);
 
         $orderNumber = (int) $order['orderNumber'];
         $amount = $order['amount'] / 100;
@@ -74,6 +81,7 @@ class GPWebpayApi implements GPWebpayApiInterface
         $depositFlag = 1;
         $url = $order['returnUrl'];
         $merOrderNumber = null;
+        $psd2 = $order['psd2'] ?? null;
 
         $request = new PaymentRequest($orderNumber, $amount, $currency, $depositFlag, $url, $merOrderNumber);
         if ($preferredPaymentMethod !== null && $preferredPaymentMethod !== '') {
@@ -83,14 +91,23 @@ class GPWebpayApi implements GPWebpayApiInterface
             $request->setAllowedPaymentMethods(implode(',', $allowedPaymentMethods));
         }
 
+        if ($psd2 !== null) {
+            $request->setPsd2Data($psd2);
+        }
+
         return [
             'orderId' => $order['orderNumber'],
-            'gatewayLocationUrl' => $api->createPaymentRequestUrl($request),
+            'gatewayLocationUrl' => $api->createPaymentPostRequestUrl(),
+            'gatewayPostData' => $api->createPaymentParam($request),
         ];
     }
 
-    public function retrieve(string $merchantNumber, bool $sandbox, string $clientPrivateKey, string $keyPassword): string
-    {
+    public function retrieve(
+        string $merchantNumber,
+        bool $sandbox,
+        string $clientPrivateKey,
+        string $keyPassword,
+    ): string {
         $request = $this->requestStack->getMainRequest();
         assert($request !== null);
 

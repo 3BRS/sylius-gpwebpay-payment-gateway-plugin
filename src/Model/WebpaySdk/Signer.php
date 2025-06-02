@@ -6,17 +6,17 @@ namespace ThreeBRS\SyliusGPWebpayPaymentGatewayPlugin\Model\WebpaySdk;
 
 class Signer
 {
-    /** @var \OpenSSLAsymmetricKey|null */
-    private $privateKeyResource;
+    private ?\OpenSSLAsymmetricKey $privateKeyResource;
 
-    /** @var string */
-    private $publicKey;
+    private string $publicKey;
 
-    /** @var \OpenSSLAsymmetricKey|null */
-    private $publicKeyResource;
+    private ?\OpenSSLAsymmetricKey $publicKeyResource;
 
-    public function __construct(private readonly string $privateKey, private readonly string $privateKeyPassword, string $publicKey)
-    {
+    public function __construct(
+        private readonly string $privateKey,
+        private readonly string $privateKeyPassword,
+        string $publicKey,
+    ) {
         if (!file_exists($publicKey) || !is_readable($publicKey)) {
             throw new SignerException("Public key ({$publicKey}) not exists or not readable!");
         }
@@ -51,13 +51,9 @@ class Signer
     }
 
     /**
-     * @param string $digest
-     *
-     * @return bool
-     *
      * @throws SignerException
      */
-    public function verify(array $params, $digest)
+    public function verify(array $params, string $digest): bool
     {
         $data = implode('|', $params);
         $digest = base64_decode($digest);

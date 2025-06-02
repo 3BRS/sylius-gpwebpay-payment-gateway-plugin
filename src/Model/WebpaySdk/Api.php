@@ -8,8 +8,11 @@ use RuntimeException;
 
 class Api
 {
-    public function __construct(private readonly string $merchantNumber, private readonly string $webPayUrl, private readonly Signer $signer)
-    {
+    public function __construct(
+        private readonly string $merchantNumber,
+        private readonly string $webPayUrl,
+        private readonly Signer $signer,
+    ) {
     }
 
     public function createPaymentRequestUrl(PaymentRequest $request): string
@@ -18,6 +21,11 @@ class Api
         $paymentUrl = $this->webPayUrl . '?' . http_build_query($this->createPaymentParam($request));
 
         return $paymentUrl;
+    }
+
+    public function createPaymentPostRequestUrl(): string
+    {
+        return $this->webPayUrl;
     }
 
     public function createPaymentParam(PaymentRequest $request): array
