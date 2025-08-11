@@ -32,14 +32,6 @@ services:
                 label: theebrs-sylius.gpwebpay_plugin.gpwebpay
             -   name: form.type
 
-    ThreeBRS\SyliusGPWebpayPaymentGatewayPlugin\Action\GPWebpayAction:
-        public: true
-        arguments:
-            $gpWebPayApi: '@ThreeBRS\SyliusGPWebpayPaymentGatewayPlugin\Api\GPWebpayApiInterface'
-        tags:
-            -   name: payum.action
-                factory: gpwebpay
-                alias: payum.action.set_gpwebpay
 
     threebrs.command_provider.payment_request.gpwebpay:
         class: Sylius\Bundle\PaymentBundle\CommandProvider\ActionsCommandProvider
@@ -63,6 +55,14 @@ services:
             -   name: threebrs.command_provider.payment_request.gpwebpay
                 action: !php/const Sylius\Component\Payment\Model\PaymentRequestInterface::ACTION_STATUS
 
+    threebrs.command_provider.payment_request.gpwebpay.notify:
+        class: ThreeBRS\SyliusGPWebpayPaymentGatewayPlugin\CommandProvider\NotifyPaymentRequestCommandProvider
+        arguments:
+            - '@request_stack'
+        tags:
+            -   name: threebrs.command_provider.payment_request.gpwebpay
+                action: !php/const Sylius\Component\Payment\Model\PaymentRequestInterface::ACTION_NOTIFY
+
     threebrs.provider.order_pay.http_response.gpwebpay:
         class: Sylius\Bundle\PaymentBundle\Provider\ActionsHttpResponseProvider
         arguments:
@@ -82,11 +82,23 @@ services:
             -   name: threebrs.provider.http_response.gpwebpay
                 action: !php/const Sylius\Component\Payment\Model\PaymentRequestInterface::ACTION_CAPTURE
 
+    threebrs.provider.order_pay.http_response.gpwebpay.status:
+        class: ThreeBRS\SyliusGPWebpayPaymentGatewayPlugin\ResponseProvider\StatusHttpResponseProvider
+        arguments:
+            - '@ThreeBRS\SyliusGPWebpayPaymentGatewayPlugin\Api\GPWebpayApiInterface'
+        tags:
+            -   name: threebrs.provider.http_response.gpwebpay
+                action: !php/const Sylius\Component\Payment\Model\PaymentRequestInterface::ACTION_STATUS
+
     ThreeBRS\SyliusGPWebpayPaymentGatewayPlugin\CommandHandler\CapturePaymentRequestHandler:
         autoconfigure: true
         autowire: true
 
     ThreeBRS\SyliusGPWebpayPaymentGatewayPlugin\CommandHandler\StatusPaymentRequestHandler:
+        autoconfigure: true
+        autowire: true
+
+    ThreeBRS\SyliusGPWebpayPaymentGatewayPlugin\CommandHandler\NotifyPaymentRequestHandler:
         autoconfigure: true
         autowire: true
 
@@ -98,8 +110,3 @@ services:
     ThreeBRS\SyliusGPWebpayPaymentGatewayPlugin\Provider\GpWebPayOrderNumberProviderInterface:
         alias: threebrs.provider.payment_order_number.gpwebpay
 
-#    TODO move convert logic into something
-    ThreeBRS\SyliusGPWebpayPaymentGatewayPlugin\Action\ConvertPaymentAction:
-        public: true
-        arguments:
-            $orderRepository: '@sylius.repository.order'

@@ -11,7 +11,8 @@ final readonly class ManagingPaymentMethodsContext implements Context
 {
     public function __construct(
         private EditPageInterface $updatePage,
-    ) {
+    )
+    {
     }
 
     /**

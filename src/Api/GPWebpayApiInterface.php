@@ -18,13 +18,13 @@ interface GPWebpayApiInterface
      *    amount: int,
      *    currency: string|null,
      *    returnUrl: string,
-     *    psd2: string|null|void
+     *    psd2: string|void|null
      * } $order
      * @param array<string>|null $allowedPaymentMethods
      *
      * @return array{
      *      orderId: int,
-     *      gatewayLocationUrl: string
+     *      gatewayLocationUrl: string,
      *  }
      */
     public function create(
@@ -43,4 +43,6 @@ interface GPWebpayApiInterface
         string $clientPrivateKey,
         string $keyPassword,
     ): string;
+
+    public function verifyResponse(array $responseData, array $config): bool;
 }

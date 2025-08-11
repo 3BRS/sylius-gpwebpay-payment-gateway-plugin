@@ -12,7 +12,6 @@
 			<argument type="service" id="sylius.behat.page.admin.payment_method.index" />
 			<argument type="service" id="sylius.behat.page.admin.payment_method.update" />
 			<argument type="service" id="sylius.behat.current_page_resolver" />
-			<argument type="service" id="sylius.behat.notification_checker" />
 			<argument type="collection">
 				<argument key="offline">Offline</argument>
 				<argument key="paypal_express_checkout">Paypal Express Checkout</argument>
@@ -28,8 +27,7 @@
 
 		<service id="Tests\ThreeBRS\SyliusGPWebpayPaymentGatewayPlugin\Behat\Pages\Admin\PaymentMethod\EditPageInterface"
 				 class="Tests\ThreeBRS\SyliusGPWebpayPaymentGatewayPlugin\Behat\Pages\Admin\PaymentMethod\EditPage"
-				 parent="sylius.behat.page.admin.crud.update" public="false">
-			<argument type="string">sylius_admin_channel_update</argument>
+				 parent="sylius.behat.page.admin.channel.update" public="false">
 		</service>
 
 		<service id="Tests\ThreeBRS\SyliusGPWebpayPaymentGatewayPlugin\Behat\Context\Setup\PaymentContext"
@@ -45,6 +43,19 @@
 				<argument key="gpwebpay">GP webpay</argument>
 			</argument>
 		</service>
+
+		<service id="Tests\ThreeBRS\SyliusGPWebpayPaymentGatewayPlugin\Behat\Context\Setup\PaymentRequestContext"
+				 class="Tests\ThreeBRS\SyliusGPWebpayPaymentGatewayPlugin\Behat\Context\Setup\PaymentRequestContext">
+			<argument type="service" id="sylius.behat.shared_storage" />
+			<argument type="service" id="sylius.repository.order" />
+			<argument type="service" id="sylius.repository.payment_request" />
+			<argument type="service" id="test.client" />
+		</service>
+
+		<service id="tests_threebrs_sylius_gpwebpay_payment_gateway_plugin.context.setup.payment"
+				 alias="Tests\ThreeBRS\SyliusGPWebpayPaymentGatewayPlugin\Behat\Context\Setup\PaymentContext" />
+		<service id="tests_threebrs_sylius_gpwebpay_payment_gateway_plugin.context.setup.payment_request"
+				 alias="Tests\ThreeBRS\SyliusGPWebpayPaymentGatewayPlugin\Behat\Context\Setup\PaymentRequestContext" />
 
 	</services>
 </container>

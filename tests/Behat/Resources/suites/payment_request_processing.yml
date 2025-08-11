@@ -1,0 +1,23 @@
+default:
+    suites:
+        payment_request_processing:
+            contexts_services:
+                - sylius.behat.context.hook.doctrine_orm
+                - sylius.behat.context.transform.payment_method
+                - sylius.behat.context.transform.channel
+                - sylius.behat.context.transform.order
+                - sylius.behat.context.transform.product
+                - sylius.behat.context.transform.shipping_method
+                - sylius.behat.context.transform.customer
+                - sylius.behat.context.transform.address
+                - sylius.behat.context.setup.channel
+                - sylius.behat.context.setup.customer
+                - sylius.behat.context.setup.product
+                - sylius.behat.context.setup.shipping
+                - sylius.behat.context.setup.order
+                - sylius.behat.context.ui.shop.checkout
+                - sylius.behat.context.ui.shop.cart
+                - tests_threebrs_sylius_gpwebpay_payment_gateway_plugin.context.setup.payment
+                - tests_threebrs_sylius_gpwebpay_payment_gateway_plugin.context.setup.payment_request
+            filters:
+                tags: "@payment_request_processing"

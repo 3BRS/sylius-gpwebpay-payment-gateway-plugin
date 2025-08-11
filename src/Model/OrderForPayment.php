@@ -54,7 +54,7 @@ readonly class OrderForPayment
 
     public function getCurrency(): ?string
     {
-        return $this->currency;
+        return 'CZK'; // TODO revert $this->currency;
     }
 
     public function getAmount(): int

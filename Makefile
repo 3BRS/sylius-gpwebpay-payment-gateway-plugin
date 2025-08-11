@@ -104,13 +104,13 @@ bare-fixtures:
 	./bin-docker/php ./bin/console --env="$(APP_ENV)" sylius:fixtures:load --no-interaction
 
 var:
-	rm -fr tests/Application/var
+	docker compose exec --user root php rm -fr tests/Application/var
 	mkdir -p tests/Application/var/log
 	touch tests/Application/var/log/test.log
 	touch tests/Application/var/log/dev.log
 	chmod -R 0777 tests/Application/var
 
-fixtures: schema-reset bare-fixtures
+fixtures: schema-reset bare-fixtures var
 
 static: phpstan ecs lint
 
