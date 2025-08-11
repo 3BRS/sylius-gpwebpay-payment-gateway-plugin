@@ -10,7 +10,7 @@ class Signer
 
     private string $publicKey;
 
-    private ?\OpenSSLAsymmetricKey $publicKeyResource;
+    private ?\OpenSSLAsymmetricKey $publicKeyResource = null;
 
     public function __construct(
         private readonly string $privateKey,

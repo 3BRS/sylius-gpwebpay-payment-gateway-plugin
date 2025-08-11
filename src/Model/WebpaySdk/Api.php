@@ -20,11 +20,6 @@ readonly class Api
         return $this->webPayUrl . '?' . http_build_query($this->createPaymentParam($request));
     }
 
-    public function createPaymentPostRequestUrl(): string
-    {
-        return $this->webPayUrl;
-    }
-
     public function createPaymentParam(GpWebPayPaymentRequest $request): array
     {
         // digest request

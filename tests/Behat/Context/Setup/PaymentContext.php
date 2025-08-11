@@ -29,12 +29,12 @@ final readonly class PaymentContext implements Context
         string $paymentMethodName,
         string $paymentMethodCode,
     ): void {
-        $paymentMethod = $this->createPaymentMethod($paymentMethodName, $paymentMethodCode, 'GP webpay');
+        $paymentMethod = $this->createPaymentMethod($paymentMethodName, $paymentMethodCode, 'gpwebpay');
         $gatewayConfig = $paymentMethod->getGatewayConfig();
         assert($gatewayConfig !== null, 'Gateway config should not be null');
         $gatewayConfig->setConfig([
             'merchantNumber' => 'TEST',
-            'keyPrivateName' => 'TEST',
+            'keyPrivate' => 'TEST',
             'keyPrivatePassword' => 'TEST',
             'sandbox' => true,
         ]);

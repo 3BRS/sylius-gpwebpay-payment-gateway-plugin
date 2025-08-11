@@ -61,13 +61,13 @@ class GPWebpayApi implements GPWebpayApiInterface
      *     amount: int,
      *     currency: string|null,
      *     returnUrl: string,
-     *     psd2: string|null|void,
+     *     psd2: string|void|null,
      * } $order
      * @param array<string>|null $allowedPaymentMethods
      *
      * @return array{
      *     orderId: int,
-     *     gatewayLocationUrl: string
+     *     gatewayLocationUrl: string,
      * }
      */
     public function create(
@@ -103,8 +103,7 @@ class GPWebpayApi implements GPWebpayApiInterface
 
         return [
             'orderId' => $order['orderNumber'],
-            'gatewayLocationUrl' => $api->createPaymentPostRequestUrl(),
-            'gatewayPostData' => $api->createPaymentParam($request),
+            'gatewayLocationUrl' => $api->createPaymentRequestUrl($request),
         ];
     }
 
@@ -145,5 +144,40 @@ class GPWebpayApi implements GPWebpayApiInterface
         }
 
         return GPWebpayApiInterface::PAID;
+    }
+
+    public function verifyResponse(array $responseData, array $config): bool
+    {
+        if (empty($responseData) || !isset($config['merchantNumber'], $config['keyPrivate'], $config['keyPrivatePassword'])) {
+            return false;
+        }
+
+        try {
+            $operation = (string) ($responseData['OPERATION'] ?? '');
+            $ordernumber = (string) ($responseData['ORDERNUMBER'] ?? '');
+            $merordernum = isset($responseData['MERORDERNUM']) ? (string) $responseData['MERORDERNUM'] : null;
+            $prcode = (int) ($responseData['PRCODE'] ?? -1);
+            $srcode = (int) ($responseData['SRCODE'] ?? -1);
+            $resulttext = (string) ($responseData['RESULTTEXT'] ?? '');
+            $digest = (string) ($responseData['DIGEST'] ?? '');
+            $digest1 = (string) ($responseData['DIGEST1'] ?? '');
+
+            $response = new PaymentResponse($operation, $ordernumber, $merordernum, $prcode, $srcode, $resulttext, $digest, $digest1);
+
+            $api = $this->createAPI(
+                (bool) ($config['sandbox'] ?? true),
+                (string) $config['keyPrivate'],
+                (string) $config['keyPrivatePassword'],
+                (string) $config['merchantNumber'],
+            );
+
+            $api->verifyPaymentResponse($response);
+
+            return true;
+        } catch (PaymentResponseException | \Exception $e) {
+            $this->logger->error('GPWebPay response verification failed: ' . $e->getMessage());
+
+            return false;
+        }
     }
 }

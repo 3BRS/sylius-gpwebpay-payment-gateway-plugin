@@ -35,8 +35,8 @@ final readonly class CapturePaymentRequestHandler
     {
         $paymentRequest = $this->paymentRequestProvider->provide($capturePaymentRequest);
 
-        $oderForPayment = $this->createOderForPayment($paymentRequest);
-        $paymentRequest->setPayload($oderForPayment->toArray());
+        $orderForPayment = $this->createOrderForPayment($paymentRequest);
+        $paymentRequest->setPayload($orderForPayment->toArray());
         $this->paymentRepository->add($paymentRequest);
 
         if ($this->stateMachine->can(
@@ -52,7 +52,7 @@ final readonly class CapturePaymentRequestHandler
         }
     }
 
-    private function createOderForPayment(PaymentRequestInterface $paymentRequest): OrderForPayment
+    private function createOrderForPayment(PaymentRequestInterface $paymentRequest): OrderForPayment
     {
         $payment = $paymentRequest->getPayment();
         assert($payment instanceof PaymentInterface);

@@ -6,17 +6,25 @@ namespace ThreeBRS\SyliusGPWebpayPaymentGatewayPlugin\CommandHandler;
 
 use Sylius\Abstraction\StateMachine\StateMachineInterface;
 use Sylius\Bundle\PaymentBundle\Provider\PaymentRequestProviderInterface;
+use Sylius\Component\Core\Model\PaymentInterface;
 use Sylius\Component\Payment\PaymentRequestTransitions;
 use Symfony\Component\Messenger\Attribute\AsMessageHandler;
+use ThreeBRS\SyliusGPWebpayPaymentGatewayPlugin\Api\GPWebpayApiInterface;
 use ThreeBRS\SyliusGPWebpayPaymentGatewayPlugin\Command\StatusPaymentRequest;
+use ThreeBRS\SyliusGPWebpayPaymentGatewayPlugin\ResponseProvider\Exception\InvalidPaymentGatewayConfiguration;
+use ThreeBRS\SyliusGPWebpayPaymentGatewayPlugin\ResponseProvider\Partials\GpWebPayApiConfigurationTrait;
 
 #[AsMessageHandler]
 final readonly class StatusPaymentRequestHandler
 {
+    use GpWebPayApiConfigurationTrait;
+
     public function __construct(
         private PaymentRequestProviderInterface $paymentRequestProvider,
+        private GPWebpayApiInterface $gpWebpayApi,
         private StateMachineInterface $stateMachine,
-    ) {
+    )
+    {
     }
 
     /**
@@ -26,16 +34,66 @@ final readonly class StatusPaymentRequestHandler
     {
         $paymentRequest = $this->paymentRequestProvider->provide($statusPaymentRequest);
 
-        // TODO \ThreeBRS\SyliusGPWebpayPaymentGatewayPlugin\Action\StatusAction::execute
-        // Custom capture logic for the payment provider would go here.
-        // Example: communicating with the payment gateway API to capture funds.
+        $payment = $paymentRequest->getPayment();
+        assert($payment !== null, 'PaymentRequest must have a payment associated.');
+        assert($payment instanceof PaymentInterface);
 
-        // TODO
-        // Mark the PaymentRequest as complete|process|fail|cancel.
-        $this->stateMachine->apply(
+        $gpWebPayConfig = $paymentRequest->getPayment()->getMethod()?->getGatewayConfig()?->getConfig();
+        if ($gpWebPayConfig === null) {
+            throw new InvalidPaymentGatewayConfiguration(
+                'GpWebPay payment method configuration is missing',
+            );
+        }
+
+        $status = $this->gpWebpayApi->retrieve(
+            merchantNumber  : $this->getMerchantNumber($gpWebPayConfig),
+            sandbox         : $this->isSandbox($gpWebPayConfig),
+            clientPrivateKey: $this->getClientPrivateKey($gpWebPayConfig),
+            keyPassword     : $this->getClientPrivateKeyPassword($gpWebPayConfig),
+        );
+
+        if ($status === GPWebpayApiInterface::CREATED) {
+            if ($this->stateMachine->can(
+                $paymentRequest,
+                PaymentRequestTransitions::GRAPH,
+                PaymentRequestTransitions::TRANSITION_PROCESS,
+            )) {
+                $this->stateMachine->apply(
+                    $paymentRequest,
+                    PaymentRequestTransitions::GRAPH,
+                    PaymentRequestTransitions::TRANSITION_PROCESS,
+                );
+            }
+
+            return;
+        }
+
+        if ($status === GPWebpayApiInterface::CANCELED) {
+            if ($this->stateMachine->can(
+                $paymentRequest,
+                PaymentRequestTransitions::GRAPH,
+                PaymentRequestTransitions::TRANSITION_CANCEL,
+            )) {
+                $this->stateMachine->apply(
+                    $paymentRequest,
+                    PaymentRequestTransitions::GRAPH,
+                    PaymentRequestTransitions::TRANSITION_CANCEL,
+                );
+            }
+
+            return;
+        }
+
+        if ($this->stateMachine->can(
             $paymentRequest,
             PaymentRequestTransitions::GRAPH,
             PaymentRequestTransitions::TRANSITION_COMPLETE,
-        );
+        )) {
+            $this->stateMachine->apply(
+                $paymentRequest,
+                PaymentRequestTransitions::GRAPH,
+                PaymentRequestTransitions::TRANSITION_COMPLETE,
+            );
+        }
     }
 }
