@@ -7,12 +7,17 @@ namespace ThreeBRS\SyliusGPWebpayPaymentGatewayPlugin\ResponseProvider;
 use Sylius\Bundle\PaymentBundle\Provider\HttpResponseProviderInterface;
 use Sylius\Bundle\ResourceBundle\Controller\RequestConfiguration;
 use Sylius\Component\Payment\Model\PaymentRequestInterface;
-use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Response;
-use ThreeBRS\SyliusGPWebpayPaymentGatewayPlugin\Api\GPWebpayApiInterface;
+use Symfony\Component\Routing\RouterInterface;
 
 final readonly class StatusHttpResponseProvider implements HttpResponseProviderInterface
 {
+    public function __construct(
+        private RouterInterface $router,
+    ) {
+    }
+
     public function supports(
         RequestConfiguration $requestConfiguration,
         PaymentRequestInterface $paymentRequest,
@@ -24,11 +29,9 @@ final readonly class StatusHttpResponseProvider implements HttpResponseProviderI
         RequestConfiguration $requestConfiguration,
         PaymentRequestInterface $paymentRequest,
     ): Response {
-        $responseData = $paymentRequest->getResponseData();
-
-        return new JsonResponse([
-            'status' => $paymentRequest->getState(),
-            'data' => $responseData,
-        ]);
+        return new RedirectResponse(
+            $this->router->generate('sylius_shop_order_thank_you'),
+            Response::HTTP_SEE_OTHER,
+        );
     }
 }

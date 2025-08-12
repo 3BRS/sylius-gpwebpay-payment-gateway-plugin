@@ -1,3 +1,10 @@
 imports:
-    - { resource: '@ThreeBRSSyliusGPWebpayPaymentGatewayPlugin/Resources/config/services.yaml' }
     - { resource: '@ThreeBRSSyliusGPWebpayPaymentGatewayPlugin/Resources/config/sylius_twig_hooks.yaml' }
+
+framework:
+    messenger:
+        transports:
+            sync: 'sync://'
+        routing:
+            'ThreeBRS\SyliusGPWebpayPaymentGatewayPlugin\Command\CapturePaymentRequest': sync
+            'ThreeBRS\SyliusGPWebpayPaymentGatewayPlugin\Command\StatusPaymentRequest': sync

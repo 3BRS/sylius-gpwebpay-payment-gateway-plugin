@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace ThreeBRS\SyliusGPWebpayPaymentGatewayPlugin\Model\WebpaySdk;
 
-class Signer
+class Signer implements SignerInterface
 {
     private ?\OpenSSLAsymmetricKey $privateKeyResource;
 

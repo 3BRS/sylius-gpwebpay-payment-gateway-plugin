@@ -29,7 +29,7 @@ final readonly class PaymentContext implements Context
         string $paymentMethodName,
         string $paymentMethodCode,
     ): void {
-        $paymentMethod = $this->createPaymentMethod($paymentMethodName, $paymentMethodCode, 'gpwebpay');
+        $paymentMethod = $this->createPaymentMethod($paymentMethodName, $paymentMethodCode, 'GP webpay');
         $gatewayConfig = $paymentMethod->getGatewayConfig();
         assert($gatewayConfig !== null, 'Gateway config should not be null');
         $gatewayConfig->setConfig([
@@ -45,12 +45,17 @@ final readonly class PaymentContext implements Context
     private function createPaymentMethod(
         string $name,
         string $code,
-        string $gatewayFactory = 'Offline',
+        string $gatewayFactoryName = 'Offline',
         string $description = '',
         bool $addForCurrentChannel = true,
         ?int $position = null,
     ): PaymentMethodInterface {
-        $gatewayFactory = array_search($gatewayFactory, $this->gatewayFactories);
+        $gatewayFactory = array_search($gatewayFactoryName, $this->gatewayFactories);
+        if ($gatewayFactory === false) {
+            throw new \InvalidArgumentException(
+                sprintf('Gateway factory "%s" does not exist. Known are %s', $gatewayFactoryName, var_export($this->gatewayFactories, true)),
+            );
+        }
 
         $paymentMethod = $this->paymentMethodExampleFactory->create([
             'name' => ucfirst($name),

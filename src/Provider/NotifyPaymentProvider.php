@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace ThreeBRS\SyliusGPWebpayPaymentGatewayPlugin\Provider;
 
+use Doctrine\ORM\EntityRepository;
 use Sylius\Bundle\PaymentBundle\Attribute\AsNotifyPaymentProvider;
 use Sylius\Bundle\PaymentBundle\Provider\NotifyPaymentProviderInterface;
 use Sylius\Component\Core\Model\PaymentInterface;
-use Sylius\Component\Core\Repository\PaymentRepositoryInterface;
 use Sylius\Component\Payment\Model\PaymentMethodInterface;
 use Symfony\Component\HttpFoundation\Request;
 
@@ -15,7 +15,7 @@ use Symfony\Component\HttpFoundation\Request;
 final readonly class NotifyPaymentProvider implements NotifyPaymentProviderInterface
 {
     public function __construct(
-        private PaymentRepositoryInterface $paymentRepository,
+        private EntityRepository $entityRepository,
     ) {
     }
 
@@ -36,7 +36,7 @@ final readonly class NotifyPaymentProvider implements NotifyPaymentProviderInter
         }
 
         // Find payment by order number and payment method
-        $payment = $this->paymentRepository->createQueryBuilder('p')
+        $payment = $this->entityRepository->createQueryBuilder('p')
             ->innerJoin('p.order', 'o')
             ->where('p.method = :method')
             ->andWhere('o.number = :orderNumber')
@@ -44,9 +44,12 @@ final readonly class NotifyPaymentProvider implements NotifyPaymentProviderInter
             ->setParameter('orderNumber', $orderNumber)
             ->orderBy('p.id', 'DESC')
             ->getQuery()
-            ->getOneOrNullResult();
+            ->getOneOrNullResult()
+        ;
 
         if ($payment) {
+            assert($payment instanceof PaymentInterface);
+
             return $payment;
         }
 

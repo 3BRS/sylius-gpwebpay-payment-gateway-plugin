@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace ThreeBRS\SyliusGPWebpayPaymentGatewayPlugin\ResponseProvider\Partials;
 
 use ThreeBRS\SyliusGPWebpayPaymentGatewayPlugin\Form\Type\GPWebpayGatewayConfigurationType;
@@ -9,10 +11,12 @@ trait GpWebPayApiConfigurationTrait
 {
     private function getMerchantNumber(array $gpWebPayConfig): string
     {
-        $merchantNumber = (string)$this->getValueFromGatewayConfiguration(
+        $merchantNumber = $this->getValueFromGatewayConfiguration(
             GPWebpayGatewayConfigurationType::MERCHANT_NUMBER,
             $gpWebPayConfig,
         );
+        assert($merchantNumber === null || is_scalar($merchantNumber));
+        $merchantNumber = (string) $merchantNumber;
         if ($merchantNumber === '') {
             throw new InvalidPaymentGatewayConfiguration(
                 'GpWebPay merchant number is missing in the configuration',
@@ -24,18 +28,23 @@ trait GpWebPayApiConfigurationTrait
 
     private function isSandbox(array $gpWebPayConfig): bool
     {
-        return (bool)$this->getValueFromGatewayConfiguration(
+        $isSandbox = $this->getValueFromGatewayConfiguration(
             GPWebpayGatewayConfigurationType::SANDBOX,
             $gpWebPayConfig,
         );
+        assert($isSandbox === null || is_scalar($isSandbox));
+
+        return (bool) $isSandbox;
     }
 
     private function getClientPrivateKey(array $gpWebPayConfig): string
     {
-        $clientPrivateKey = (string)$this->getValueFromGatewayConfiguration(
+        $clientPrivateKey = $this->getValueFromGatewayConfiguration(
             GPWebpayGatewayConfigurationType::KEY_PRIVATE,
             $gpWebPayConfig,
         );
+        assert($clientPrivateKey === null || is_scalar($clientPrivateKey));
+        $clientPrivateKey = (string) $clientPrivateKey;
         if ($clientPrivateKey === '') {
             throw new InvalidPaymentGatewayConfiguration(
                 'GpWebPay client private key is missing in the configuration',
@@ -47,10 +56,12 @@ trait GpWebPayApiConfigurationTrait
 
     private function getClientPrivateKeyPassword(array $gpWebPayConfig): string
     {
-        $clientPrivateKeyPassword = (string)$this->getValueFromGatewayConfiguration(
+        $clientPrivateKeyPassword = $this->getValueFromGatewayConfiguration(
             GPWebpayGatewayConfigurationType::KEY_PRIVATE_PASSWORD,
             $gpWebPayConfig,
         );
+        assert($clientPrivateKeyPassword === null || is_scalar($clientPrivateKeyPassword));
+        $clientPrivateKeyPassword = (string) $clientPrivateKeyPassword;
         if ($clientPrivateKeyPassword === '') {
             throw new InvalidPaymentGatewayConfiguration(
                 'GpWebPay client private key password is missing in the configuration',
@@ -63,8 +74,7 @@ trait GpWebPayApiConfigurationTrait
     private function getValueFromGatewayConfiguration(
         string $key,
         array $gpWebPayConfig,
-    ): string|int|float|array|bool|null
-    {
+    ): string|int|float|array|bool|null {
         if (!array_key_exists($key, $gpWebPayConfig)) {
             throw new InvalidPaymentGatewayConfiguration(
                 sprintf('GpWebPay configuration key "%s" is missing', $key),

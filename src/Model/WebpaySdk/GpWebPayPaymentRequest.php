@@ -92,14 +92,15 @@ class GpWebPayPaymentRequest
 
     /**
      * Add Payment Methods parameter to request fields
-     *
-     * @param string $value field value
      */
     public function setAllowedPaymentMethods(string $value): void
     {
         $this->params['PAYMETHODS'] = $value;
     }
 
+    /**
+     * @param array<string, string|array<string, string|mixed>> $psd2
+     */
     public function setPsd2Data(array $psd2): void
     {
         $xml = new \SimpleXMLElement('<?xml version="1.0" encoding="utf-8"?><additionalInfoRequest xmlns="http://gpe.cz/gpwebpay/additionalInfo/request" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="4.0"/>');

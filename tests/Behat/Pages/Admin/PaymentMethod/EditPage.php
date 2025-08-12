@@ -10,16 +10,16 @@ final class EditPage extends BaseUpdatePage implements EditPageInterface
 {
     public function setGPWebpayMerchantNumber(string $value): void
     {
-        $this->getDocument()->fillField('sylius_payment_method_gatewayConfig_config_merchantNumber', $value);
+        $this->getDocument()->fillField('sylius_admin_payment_method_gatewayConfig_config_merchantNumber', $value);
     }
 
     public function setGPWebpayKeyPassword(string $value): void
     {
-        $this->getDocument()->fillField('sylius_payment_method_gatewayConfig_config_keyPrivatePassword', $value);
+        $this->getDocument()->fillField('sylius_admin_payment_method_gatewayConfig_config_keyPrivatePassword', $value);
     }
 
     public function setGPWebpayKey(string $value): void
     {
-        $this->getDocument()->fillField('sylius_payment_method_gatewayConfig_config_keyPrivate', $value);
+        $this->getDocument()->fillField('sylius_admin_payment_method_gatewayConfig_config_keyPrivate', $value);
     }
 }

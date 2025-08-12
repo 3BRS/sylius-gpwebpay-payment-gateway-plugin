@@ -32,6 +32,7 @@ readonly class PaymentResponse
         string $digest,
         string $digest1,
     ) {
+        // @phpstan-ignore-next-line
         $this->params = [
             ...[
                 'operation' => $operation,
