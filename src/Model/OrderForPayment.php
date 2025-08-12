@@ -17,7 +17,7 @@ readonly class OrderForPayment
      *
      * @throws InvalidPayloadException
      */
-    public static function fromArray(array $data): static
+    public static function fromArray(array $data): self
     {
         return new self(
             currency: $data['currency']
@@ -54,7 +54,7 @@ readonly class OrderForPayment
 
     public function getCurrency(): ?string
     {
-        return 'CZK'; // TODO revert $this->currency;
+        return $this->currency;
     }
 
     public function getAmount(): int

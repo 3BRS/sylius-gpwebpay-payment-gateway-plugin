@@ -8,6 +8,7 @@ use Sylius\Abstraction\StateMachine\StateMachineInterface;
 use Sylius\Bundle\PaymentBundle\Provider\PaymentRequestProviderInterface;
 use Sylius\Component\Core\Model\PaymentInterface;
 use Sylius\Component\Payment\PaymentRequestTransitions;
+use Sylius\Component\Payment\PaymentTransitions;
 use Symfony\Component\Messenger\Attribute\AsMessageHandler;
 use ThreeBRS\SyliusGPWebpayPaymentGatewayPlugin\Api\GPWebpayApiInterface;
 use ThreeBRS\SyliusGPWebpayPaymentGatewayPlugin\Command\StatusPaymentRequest;
@@ -23,8 +24,7 @@ final readonly class StatusPaymentRequestHandler
         private PaymentRequestProviderInterface $paymentRequestProvider,
         private GPWebpayApiInterface $gpWebpayApi,
         private StateMachineInterface $stateMachine,
-    )
-    {
+    ) {
     }
 
     /**
@@ -80,6 +80,7 @@ final readonly class StatusPaymentRequestHandler
                     PaymentRequestTransitions::TRANSITION_CANCEL,
                 );
             }
+            // do not cancel payment, because same payment can have multiple requests
 
             return;
         }
@@ -93,6 +94,18 @@ final readonly class StatusPaymentRequestHandler
                 $paymentRequest,
                 PaymentRequestTransitions::GRAPH,
                 PaymentRequestTransitions::TRANSITION_COMPLETE,
+            );
+        }
+
+        if ($this->stateMachine->can(
+            $payment,
+            PaymentTransitions::GRAPH,
+            PaymentTransitions::TRANSITION_COMPLETE,
+        )) {
+            $this->stateMachine->apply(
+                $payment,
+                PaymentTransitions::GRAPH,
+                PaymentTransitions::TRANSITION_COMPLETE,
             );
         }
     }

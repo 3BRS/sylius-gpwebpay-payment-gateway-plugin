@@ -5,8 +5,7 @@ parameters:
         MPS: 'MasterPass'
         GPAY: 'Google Pay'
         APAY: 'Apple Pay'
-        BTNCS: 'Platba 24'
-        BTN360CS: 'Wire Transfer'
+        APM-BTR: 'All available merchant APM methods'
 
 services:
     _defaults:
@@ -17,8 +16,6 @@ services:
     ThreeBRS\SyliusGPWebpayPaymentGatewayPlugin\Api\GPWebpayApiInterface:
         class: ThreeBRS\SyliusGPWebpayPaymentGatewayPlugin\Api\GPWebpayApi
         arguments:
-            $translator: '@translator'
-            $shopperContext: '@sylius.context.shopper'
             $requestStack: '@request_stack'
             $logger: '@sylius_fixtures.logger'
 
@@ -85,7 +82,7 @@ services:
     threebrs.provider.order_pay.http_response.gpwebpay.status:
         class: ThreeBRS\SyliusGPWebpayPaymentGatewayPlugin\ResponseProvider\StatusHttpResponseProvider
         arguments:
-            - '@ThreeBRS\SyliusGPWebpayPaymentGatewayPlugin\Api\GPWebpayApiInterface'
+            - '@router'
         tags:
             -   name: threebrs.provider.http_response.gpwebpay
                 action: !php/const Sylius\Component\Payment\Model\PaymentRequestInterface::ACTION_STATUS

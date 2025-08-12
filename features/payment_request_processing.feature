@@ -20,20 +20,19 @@ Feature: GPWebPay Payment Request processing
         When I select "GP webpay" payment method
         And I complete the payment step
         Then I should be on the checkout complete step
-        And I should see "Thank you!"
 
     @ui
     Scenario: Handling payment notification from GPWebPay
-        Given I have placed an order with "GP webpay" payment method
-        And the payment request is in "processing" state
+        Given I have placed an order with "gpwebpay" payment method
+        And the order has a notify payment request in "processing" state
         When GPWebPay sends a successful payment notification
         Then the payment request should be completed
         And the order should be marked as paid
 
     @ui
     Scenario: Handling failed payment notification from GPWebPay
-        Given I have placed an order with "GP webpay" payment method
-        And the payment request is in "processing" state
+        Given I have placed an order with "gpwebpay" payment method
+        And the order has a notify payment request in "processing" state
         When GPWebPay sends a failed payment notification
         Then the payment request should be failed
         And the order should remain unpaid

@@ -24,7 +24,8 @@ init:
 	./bin-docker/yarn --cwd=tests/Application install --pure-lockfile
 	GULP_ENV=prod ./bin-docker/yarn --cwd=tests/Application build
 	chmod -R 0777 tests/Application/var
-	./bin-docker/php .bin/console --env="$(APP_ENV)" sylius:payment:generate-key --no-interaction
+	./bin-docker/php ./bin/console --env="$(APP_ENV)" sylius:payment:generate-key --no-interaction
+	./bin-docker/php ./bin/console --env="$(APP_ENV)" lexik:jwt:generate-keypair --skip-if-exists --no-interaction
 
 init-tests:
 	which docker > /dev/null || (echo "Please install docker binary" && exit 1)
@@ -47,7 +48,8 @@ init-tests:
 	./bin-docker/yarn --cwd=tests/Application install --pure-lockfile
 	GULP_ENV=prod ./bin-docker/yarn --cwd=tests/Application build
 	chmod -R 0777 tests/Application/var
-	./bin-docker/php .bin/console --env=test sylius:payment:generate-key --no-interaction
+	./bin-docker/php ./bin/console --env=test sylius:payment:generate-key --no-interaction
+	./bin-docker/php ./bin/console --env=test lexik:jwt:generate-keypair --skip-if-exists --no-interaction
 
 cache:
 	@make var
@@ -104,7 +106,7 @@ bare-fixtures:
 	./bin-docker/php ./bin/console --env="$(APP_ENV)" sylius:fixtures:load --no-interaction
 
 var:
-	docker compose exec --user root php rm -fr tests/Application/var
+	docker compose run --rm --user root php rm -fr tests/Application/var
 	mkdir -p tests/Application/var/log
 	touch tests/Application/var/log/test.log
 	touch tests/Application/var/log/dev.log

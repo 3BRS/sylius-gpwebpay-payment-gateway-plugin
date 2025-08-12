@@ -6,9 +6,7 @@ namespace ThreeBRS\SyliusGPWebpayPaymentGatewayPlugin\Api;
 
 use Alcohol\ISO4217;
 use Psr\Log\LoggerInterface;
-use Sylius\Component\Core\Context\ShopperContextInterface;
 use Symfony\Component\HttpFoundation\RequestStack;
-use Symfony\Contracts\Translation\TranslatorInterface;
 use ThreeBRS\SyliusGPWebpayPaymentGatewayPlugin\Model\WebpaySdk\Api;
 use ThreeBRS\SyliusGPWebpayPaymentGatewayPlugin\Model\WebpaySdk\GpWebPayPaymentRequest;
 use ThreeBRS\SyliusGPWebpayPaymentGatewayPlugin\Model\WebpaySdk\PaymentResponse;
@@ -18,10 +16,8 @@ use ThreeBRS\SyliusGPWebpayPaymentGatewayPlugin\Model\WebpaySdk\Signer;
 class GPWebpayApi implements GPWebpayApiInterface
 {
     public function __construct(
-        protected TranslatorInterface $translator,
-        protected ShopperContextInterface $shopperContext,
-        protected LoggerInterface $logger,
-        protected RequestStack $requestStack,
+        private LoggerInterface $logger,
+        private RequestStack $requestStack,
     ) {
     }
 
@@ -44,11 +40,10 @@ class GPWebpayApi implements GPWebpayApiInterface
         return new Api($merchantNumber, $apiEndpoint, $signer);
     }
 
-    protected function getCurrency(?string $currencyCode): ?int
+    protected function getCurrency(?string $currencyCode): int
     {
         if ($currencyCode === null) {
-            // if not given, default currency from the merchant’s or bank’s settings is used
-            return null;
+            throw new \RuntimeException('Required currency code is not set.');
         }
         $currency = (new ISO4217())->getByAlpha3($currencyCode);
 
@@ -61,7 +56,7 @@ class GPWebpayApi implements GPWebpayApiInterface
      *     amount: int,
      *     currency: string|null,
      *     returnUrl: string,
-     *     psd2: string|void|null,
+     *     psd2: array<string, string|array<string, mixed>>|null,
      * } $order
      * @param array<string>|null $allowedPaymentMethods
      *
@@ -102,7 +97,7 @@ class GPWebpayApi implements GPWebpayApiInterface
         }
 
         return [
-            'orderId' => $order['orderNumber'],
+            'orderId' => $orderNumber,
             'gatewayLocationUrl' => $api->createPaymentRequestUrl($request),
         ];
     }

@@ -25,27 +25,25 @@ final readonly class CaptureHttpResponseProvider implements HttpResponseProvider
     public function __construct(
         private GPWebpayApiInterface $gpWebPayApi,
         private RouterInterface $router,
-    )
-    {
+    ) {
     }
 
     public function supports(
         RequestConfiguration $requestConfiguration,
         PaymentRequestInterface $paymentRequest,
-    ): bool
-    {
+    ): bool {
         return $paymentRequest->getAction() === PaymentRequestInterface::ACTION_CAPTURE;
     }
 
     public function getResponse(
         RequestConfiguration $requestConfiguration,
         PaymentRequestInterface $paymentRequest,
-    ): Response
-    {
+    ): Response {
         $payloadArray = $paymentRequest->getPayload();
         if (!is_array($payloadArray)) {
             throw new InvalidPayloadException('Payment request payload expected to be an array');
         }
+        // @phpstan-ignore-next-line
         $orderForPayment = OrderForPayment::fromArray($payloadArray);
 
         $gpWebPayConfig = $paymentRequest->getPayment()->getMethod()?->getGatewayConfig()?->getConfig();
@@ -57,15 +55,15 @@ final readonly class CaptureHttpResponseProvider implements HttpResponseProvider
 
         $requestData = $this->gpWebPayApi->create(
             [
-                'orderNumber' => (int)$orderForPayment->getOrderNumber(),
-                'amount'      => $orderForPayment->getAmount(),
-                'currency'    => $orderForPayment->getCurrency(),
-                'returnUrl'   => $this->router->generate(
+                'orderNumber' => (int) $orderForPayment->getOrderNumber(),
+                'amount' => $orderForPayment->getAmount(),
+                'currency' => $orderForPayment->getCurrency(),
+                'returnUrl' => $this->router->generate(
                     'sylius_shop_order_after_pay',
                     ['hash' => $paymentRequest->getHash()],
                     UrlGeneratorInterface::ABSOLUTE_URL,
                 ),
-                'psd2'        => null,
+                'psd2' => null,
             ],
             $this->getMerchantNumber($gpWebPayConfig),
             $this->isSandbox($gpWebPayConfig),
@@ -79,28 +77,37 @@ final readonly class CaptureHttpResponseProvider implements HttpResponseProvider
             $requestData['gatewayLocationUrl'],
             Response::HTTP_SEE_OTHER,
         );
-        // TODO use sylius_shop_order_after_pay route if already paid
     }
 
+    /**
+     * @param array<string, mixed> $gpWebPayConfig
+     *
+     * @return array<string>|null
+     */
     private function getAllowedPaymentMethods(array $gpWebPayConfig): ?array
     {
-        return (array)$this->getValueFromGatewayConfiguration(
+        $allowedPaymentMethods = $this->getValueFromGatewayConfiguration(
             GPWebpayGatewayConfigurationType::ALLOWED_PAYMENT_METHODS,
             $gpWebPayConfig,
         );
+
+        return $allowedPaymentMethods
+            ? (array) $allowedPaymentMethods
+            : null;
     }
 
     private function getPreferredPaymentMethod(array $gpWebPayConfig): ?string
     {
-        $preferredPaymentMethod = (string)$this->getValueFromGatewayConfiguration(
+        $preferredPaymentMethod = $this->getValueFromGatewayConfiguration(
             GPWebpayGatewayConfigurationType::PREFERRED_PAYMENT_METHOD,
             $gpWebPayConfig,
         );
+        assert($preferredPaymentMethod === null || is_scalar($preferredPaymentMethod));
+        $preferredPaymentMethod = (string) $preferredPaymentMethod;
         if ($preferredPaymentMethod === '') {
             return null;
         }
 
         return $preferredPaymentMethod;
     }
-
 }

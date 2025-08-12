@@ -57,9 +57,12 @@ final readonly class CapturePaymentRequestHandler
         $payment = $paymentRequest->getPayment();
         assert($payment instanceof PaymentInterface);
 
+        $amount = $payment->getAmount();
+        assert($amount !== null, 'Payment amount should not be null');
+
         return new OrderForPayment(
             currency: $payment->getCurrencyCode(),
-            amount: $payment->getAmount(),
+            amount: $amount,
             orderNumber: $this->gpWebPayOrderNumberProvider->provideOrderNumber($payment),
         );
     }

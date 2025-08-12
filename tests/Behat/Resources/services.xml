@@ -49,7 +49,21 @@
 			<argument type="service" id="sylius.behat.shared_storage" />
 			<argument type="service" id="sylius.repository.order" />
 			<argument type="service" id="sylius.repository.payment_request" />
+			<argument type="service" id="sylius.repository.payment_method" />
+			<argument type="service" id="sylius.repository.shipping_method" />
 			<argument type="service" id="test.client" />
+			<argument type="service" id="sylius.factory.order" />
+			<argument type="service" id="sylius.factory.address" />
+			<argument type="service" id="sylius.factory.customer" />
+			<argument type="service" id="sylius.factory.order_item" />
+			<argument type="service" id="sylius.factory.payment_request" />
+			<argument type="service" id="sylius_abstraction.state_machine" />
+			<argument type="service" id="sylius.resolver.product_variant" />
+			<argument type="service" id="sylius.modifier.order_item_quantity" />
+			<argument type="service" id="doctrine.orm.entity_manager" />
+			<argument type="service" id="sylius.random_generator" />
+			<argument type="service" id="router" />
+			<argument type="service" id="ThreeBRS\SyliusGPWebpayPaymentGatewayPlugin\Api\GPWebpayApiInterface" />
 		</service>
 
 		<service id="tests_threebrs_sylius_gpwebpay_payment_gateway_plugin.context.setup.payment"

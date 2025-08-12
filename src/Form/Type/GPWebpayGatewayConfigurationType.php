@@ -98,6 +98,7 @@ final class GPWebpayGatewayConfigurationType extends AbstractType
             FormEvent $event,
         ) {
             $data = $event->getData();
+            assert(is_array($data) || $data instanceof \ArrayAccess);
             $signer = new Signer(
                 $data[self::KEY_PRIVATE] ?? '',
                 $data[self::KEY_PRIVATE_PASSWORD] ?? '',

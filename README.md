@@ -19,7 +19,7 @@
 
 1. Run `$ composer require
    3brs/sylius-gpwebpay-payment-gateway-plugin`.
-1. Add plugin classes to your `config/bundles.php`:
+2. Add plugin classes to your `config/bundles.php`:
 
    ```php
    return [
@@ -27,14 +27,14 @@
       ThreeBRS\SyliusGPWebpayPaymentGatewayPlugin\ThreeBRSSyliusGPWebpayPaymentGatewayPlugin::class => ['all' => true],
    ];
    ```
-1. Load plugin configuration by `config/packages/threebrs_sylius_gpwebpay_payment_gateway_plugin.yaml`:
+3. Load plugin configuration by `config/packages/threebrs_sylius_gpwebpay_payment_gateway_plugin.yaml`:
 
    ```yaml
    imports:
     - { resource: "@ThreeBRSSyliusGPWebpayPaymentGatewayPlugin/Resources/config/config.yaml" }
    ```
 
-1. generate keys to keep gateway credentials safe:
+4. Generate keys to keep gateway credentials safe:
 
    ```bash
    bin/console sylius:payment:generate-key
@@ -70,37 +70,8 @@
 After your changes you must ensure that the tests are still passing.
 
 ```bash
-docker compose run -u application app composer install
-docker compose run -u application app bin/console doctrine:database:create --env=test
-docker compose run -u application app bin/console doctrine:schema:update --complete --force --env=test
-docker compose run -u node frontend yarn --cwd tests/Application install
-docker compose run -u node frontend yarn --cwd tests/Application build
-
-docker compose run -u application -e XDEBUG_MODE=off app bin/behat
-docker compose run -u application app bin/phpstan.sh
-docker compose run -u application app bin/ecs.sh
+make ci
 ```
-
-### Opening Sylius with your plugin
-
-1. Install symfony CLI command: https://symfony.com/download
-   - hint: for Docker (with Ubuntu) use _Debian/Ubuntu — APT based
-     Linux_ installation steps as `root` user and without `sudo` command
-      - you may need to install `curl` first ```apt-get update && apt-get install curl --yes```
-2. Run app
-   sylius-g-p-webpay-payment-gateway-plugin
-```bash
-docker compose run -u application app bash
-(cd tests/Application && APP_ENV=dev bin/console doctrine:database:create)
-(cd tests/Application && APP_ENV=dev bin/console doctrine:schema:update --complete --force)
-(cd tests/Application && APP_ENV=dev bin/console sylius:fixtures:load)
-curl -sS https://get.symfony.com/cli/installer | bash
-export PATH="$HOME/.symfony5/bin:$PATH"
-(cd tests/Application && APP_ENV=dev symfony server:start --dir=public --port=8081)
-```
-open `http://127.0.0.1:8081/admin/login`, use `sylius`, `sylius` to login
-
-- change `APP_ENV` to `test` if you need it
 
 License
 -------
