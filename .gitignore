@@ -1,4 +1,5 @@
 /.envrc
+/.env
 /composer.lock
 /symfony.lock
 /yarn.lock
