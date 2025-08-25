@@ -9,7 +9,7 @@ readonly class PaymentResponse
     /**
      * @var array{
      *        operation: string,
-     *        ordermumber: string,
+     *        ordernumber: string,
      *        prcode: int,
      *        srcode: int,
      *        resulttext: string,
@@ -36,7 +36,7 @@ readonly class PaymentResponse
         $this->params = [
             ...[
                 'operation' => $operation,
-                'ordermumber' => $ordernumber,
+                'ordernumber' => $ordernumber,
                 'prcode' => $prcode,
                 'srcode' => $srcode,
                 'resulttext' => $resulttext,
@@ -50,7 +50,7 @@ readonly class PaymentResponse
     /**
      * @return array{
      *        operation: string,
-     *        ordermumber: string,
+     *        ordernumber: string,
      *        prcode: int,
      *        srcode: int,
      *        resulttext: string,
