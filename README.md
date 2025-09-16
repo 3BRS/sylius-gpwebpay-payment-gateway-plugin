@@ -9,16 +9,16 @@
 * Using more different gateways at once or per channel
 
 <p align="center">
-	<img src="https://raw.githubusercontent.com/3BRS/sylius-gpwebpay-payment-gateway-plugin/main/doc/admin-11.png"/>
+	<img src="https://raw.githubusercontent.com/3BRS/sylius-gpwebpay-plugin/main/doc/admin-11.png"/>
 </p>
 <p align="center">
-	<img src="https://raw.githubusercontent.com/3BRS/sylius-gpwebpay-payment-gateway-plugin/main/doc/admin-2.png"/>
+	<img src="https://raw.githubusercontent.com/3BRS/sylius-gpwebpay-plugin/main/doc/admin-2.png"/>
 </p>
 
 ## Installation
 
 1. Run `$ composer require
-   3brs/sylius-gpwebpay-payment-gateway-plugin`.
+   3brs/sylius-gpwebpay-plugin`.
 2. Add plugin classes to your `config/bundles.php`:
 
    ```php
