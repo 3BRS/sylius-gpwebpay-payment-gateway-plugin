@@ -1,12 +1,17 @@
 {
-    "name": "3brs/sylius-gpwebpay-payment-gateway-plugin",
+    "name": "3brs/sylius-gpwebpay-plugin",
+    "replace": {
+        "3brs/sylius-gpwebpay-payment-gateway-plugin": "self.version"
+    },
     "type": "sylius-plugin",
-    "description": "GPWebpay plugin for Sylius",
+    "description": "GPWebpay payment gateway plugin for Sylius",
     "keywords": [
         "sylius",
         "sylius-plugin",
         "plugin",
-        "GPWebPay"
+        "GPWebPay",
+        "payment",
+        "gateway"
     ],
     "license": "MIT",
     "require": {
